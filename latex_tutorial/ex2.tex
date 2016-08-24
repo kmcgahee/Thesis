@@ -1,0 +1,54 @@
+\documentclass{article}               % article class
+\begin{document}                      % Begin document text
+
+\section{Some Useful LaTeX Environments}
+\subsection{Center Environment}
+If you have several lines to be centered horizontally,
+the \texttt{center} environment is convenient.  The example below
+produces three lines, each horizontally centered.
+\begin{center}
+  This is line one. \\
+  This is line two. \\
+  This is line three.
+\end{center}
+
+\subsection{Quotations}
+\begin{quote}
+\small          % a smaller font will be used inside this environment
+The quote environment begins a new line and indents text from
+both sides.
+Any special effects (such as changes to the type size or style) 
+started within the quote environment are terminated by the end of the environment.
+
+New paragraphs are block style: that is, no indent and a blank line
+as separation.
+\end{quote}
+
+\subsection{The List Environments}
+The following list illustrates the description environment:
+\begin{description}
+  \item[enumerate] Puts numbers in front of the items
+  \item[itemize] Puts bullets in front of the items
+  \item[description] Puts words in front of the items
+\end{description}
+
+Here is what the enumerate environment looks like:
+\begin{enumerate}     
+  \item This is the first item
+  \item This is the second item.
+  \item This is the third item.
+\end{enumerate}
+
+% How would you make the itemize environment?
+% Duplicate the lines above, which produce the enumerate environment,
+% copying them to the space below these comments.
+% Then make the changes necessary to use the itemize environment.
+% Also, uncomment the next line:
+
+%Here is what the itemize environment looks like:
+
+
+
+
+
+\end{document}

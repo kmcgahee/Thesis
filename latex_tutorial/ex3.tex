@@ -1,0 +1,34 @@
+\documentclass[12pt]{article}
+\setlength{\parindent}{0pt} 
+\setlength{\parskip}{10pt} % block paragraphs
+\begin{document}
+
+\section*{\centerline{Some Mathematical Expressions}}%unnumbered centered head
+
+Two displayed equations. Note that using \$\$ gives the same result as 
+using the displaymath environment.
+ 
+$$x^2+y^2=z^2$$
+
+\begin{displaymath} 
+\sum_{i=1}^n a_i
+\end{displaymath}
+ 
+The expression $\int_a^b f(x)\, dx$ looks different in-line 
+than it does displayed: $$\int_a^b f(x)\, dx$$ 
+
+Note use of ``left'' and ``right'' commands in the equation below. They
+make the following delimiter (in this case parentheses) grow to the
+appropriate size.
+\begin{equation}
+\left( \frac{x+y}{z+2} \right)
+\end{equation}
+
+The middle line of this eqnarray is purposely not numbered: 
+\begin{eqnarray}
+x & = & 17y \\
+y & > & a+b+c+d+ \nonumber \\
+  &   & e+f+g
+\end{eqnarray}
+
+\end{document}
