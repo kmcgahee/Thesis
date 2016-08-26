@@ -1,0 +1,47 @@
+
+\cleardoublepage
+
+\chapter{Post-Processing Pipeline}
+\label{processing}
+
+Once the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a pipeline fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the pipeline followed by a detailed explanation of each script.
+
+\section{Pipeline Overview}
+\label{processing-overview}
+
+In this pipeline each script is referred to as a stage, where each stage accomplished one specified task.  The main reason the post-processing is split into separate stages is several stages take a significant amount of time to run, so it's beneficial to not re-run the entire pipeline when changes are made. Each stage is summarized in the following list:
+
+\begin{description}
+\item[Stage 0] Calculate the position and orientation (pose) of each image.
+\item[Stage 1] Find and read QR codes in each images.
+\item[Stage 2] Create the structure of the field using the QR codes.
+\item[Stage 3] Detect leaves and plant markers in each images.
+\item[Stage 4] Cluster plant parts from stage 3 into possible plants, and filter out unlikely plants.
+\item[Stage 5] Assign individual numbers to plants and save final field map to a comma separated value (CSV) file. 
+\end{description}
+
+The two stages that take the most time are 1 and 3 as they both deal with opening each image and searching through it.  Even though these stages are similar, they are kept separate because having access to the field structure can significantly speed up the clustering step in \ref{processing-stage4} 
+ 
+Conceptually the output of each intermediate stage consists of objects which directly relate to the field, for example QR codes, plants or rows.  In reality the output is a single file containing the serialized representation of each object.  This makes it trivial to pass these objects from one script to another.
+
+The location of the code is listed in Appendix A.  TODO include ref.
+
+\section{Stage 0 - Calculating Camera Pose}
+\label{processing-stage0}
+
+% Write this section last
+
+\section{Stage 1 - Extracting QR Codes}
+\label{processing-stage1}
+
+\section{Stage 2 - Creating Field Structure}
+\label{processing-stage2}
+
+\section{Stage 3 - Extracting Plant Parts}
+\label{processing-stage3}
+
+\section{Stage 4 - Locating Plants}
+\label{processing-stage4}
+
+\section{Stage 5 - Saving Field Map}
+\label{processing-stage5}
