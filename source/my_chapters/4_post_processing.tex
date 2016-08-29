@@ -34,14 +34,105 @@ The location of the code is listed in Appendix A.  TODO include ref.
 \section{Stage 1 - Extracting QR Codes}
 \label{processing-stage1}
 
+The first goal after calculating the position and orientation of each image is to find and read all QR codes in the image set.  This process involves four steps which are applied to every image.
+
+The first step is converting the image from the default Blue Green Red (BGR) color space to the Hue Saturation Value (HSV) color space.  As can be seen in figure TODO, this is a cylindrical coordinate system which separates image intensity from the color information which makes it more robust to changes in lighting. This color space is also more aligned to how humans think about color TODO insert reference.
+
+TODO insert figure of HSV color space
+
+The second step is to separate the white QR codes from the rest of the image.  This is accomplished by applying a range threshold for each of the HSV components as described below
+
+dst(I)=lowerb(I)0≤src(I)0≤upperb(I)0∧lowerb(I)1≤src(I)1≤upperb(I)1 
+
+This results in a binary image where pixels that are mostly white are 1 (all white) and everything else is 0 (all black).
+
+The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a bounding box, which is the smallest rotated rectangle that encompasses all of the object's contours.  These bounding box's are filtered to remove one's that are either too small or too large to be QR codes. 
+
+The final step is to use these bounding box's to extract parts of the original to run through QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  
+
+TODO could talk about adaptive thresholding.  
+
+The data returned by the ZBar library is used to determine if the code corresponds to a plant group or to the start/end of a row.  If no data, or bad data, is returned by the ZBar library the extracted image is saved for the operator to review after the stage has completed. 
+
+TODO
+
+%4.1.2.4.	Calculating coordinates
+%4.1.2.5.	Include figure showing coordinate transformation
+% Handling codes found in multiple images.
+
 \section{Stage 2 - Creating Field Structure}
 \label{processing-stage2}
+
+The second stage of the pipeline involves assigned row numbers to each QR code and then creating plant groups that can span multiple rows.  
+
+As an optional input to this stage, the user can specify a file containing any QR codes from the previous stage that weren't automatically detected.  
+
+The first step of this stage is to pair the start and end QR code associated with each row.  Since the locations of the codes are known the average row heading can be calculated as shown in figure TODO.  This row heading is used to transform the world frame into a what is referred to as the field frame which has the y axis running along the rows.  The origin of the field frame is defined such that all the QR codes have a positive position in both the x and y axes.  If not specified any future algorithms in the pipeline use these field coordinates rather than world coordinates.  
+
+The next step is to assign each group QR code to a specific based only it's location.  As some rows can span several hundred meters it's not always possible to assign a QR code to the nearest row defined as a vector between the row start and end codes.  Instead a sweeping algorithm is used which is described in the following steps:
+
+The idea is to sweep across the field, from left to right and incrementally add QR codes to each row. Once a code is added to a row it splits that row into smaller segments.  Each new code computes the shortest distance to the existing row segments.
+
+The group QR codes are sorted in order of increasing x-field coordinates.  For each code find the lateral distance to the nearest row segment, where a segment is defined  
+
+
+%4.1.3.4.	Projection Algorithm – Include Figure 
+
+%4.1.3.5.	Form groups from segments
+
+It's possible that when the transplanter reaches the end of a row the current plant group isn't finished and continues into the next pass.  A pass refers to the transplanter driving once down the field, so a 2-row transplanter would have a pass containing 2 rows.  The di
+
+%4.1.3.6.	Include figure showing how groups are formed betweenmultiple rows.
 
 \section{Stage 3 - Extracting Plant Parts}
 \label{processing-stage3}
 
+Similar to the process of extracting QR codes, this stage converts each image to the HSV color space, applies a range threshold, and filters the objects based on size.  Since this stage is looking for plant leaves and plant markers it uses different ranges for the HSV components which are shown below.  
+
+TODO show range values for filter
+
+Similar to the QR codes these values are set based on experimentation.  
+
+Besides the difference in range values this stage also adds an extra step after the threshold and before finding the contours in the image.  Then step applies two filters, the first being erosion and the second dilation.  The erosion filter removes noise from the image and the then the dilation step connects adjacent contours.  These effects can be seen in figure TODO.  The reason this step isn't used for the 
+
+TODO maybe explain why connecting contours is a good thing.
+
+The reason why this extra step isn't used in stage 1 is that step is already more robust based on the selected HSV range and the square nature of the QR codes doesn't benefit from connecting contours.   
+
 \section{Stage 4 - Locating Plants}
 \label{processing-stage4}
+
+The most challenging part of the pipeline is reliably determining which plant parts found in the previous stage belong to the same plant, and which of those are actual plants that should be mapped.  This is challenging because there is often unavoidable plant debris in the field that comes from the tilling right before planting. TODO verify tilling word.  Plant markers, such as the blue sticks, help with this issue, but as discussed in TODO ref analysis section the blue sticks could not always be detected.  In addition, for large experiments it's not always feasible to have individual markers for every plant.  
+
+The task of grouping plant parts into individual plants is done using a hierarchical clustering algorithm.  In this application a cluster is represented by the minimum bounding rectangle of one or more plant parts.  If two rectangles are clustered together the resulting cluster is represented by the smallest bounding rectangle that fits both the original rectangles.  This algorithm combines the nearest two clusters into a single cluster and keeps repeating this process until an end condition is met.  The distance between two clusters is defined to be the smallest distance between any of the 4 corners of the rotated rectangles.   The end conditions are either (1) there is nothing left to cluster or (2) the nearest cluster is too far apart to be clustered based on a user defined threshold.  Also there is a maximum size limit on the clusters which is set to be the maximum expected plant size in the field.  Finally any small, unclustered plant parts are removed from the list of possible plants. 
+
+After the clustering is completed for an entire plant segment, the list of possible plants is passed to a recursive splitting algorithm to filter out the real plants. The algorithm consists of the following steps
+
+\begin{description}
+\item[Step 1] Calculate the lateral and projection distance to the segment for each possible plant.  
+\item[Step 2] Remove any plants that don't fall within the segment based on the projection distance.
+\item[Step 3] Find the most likely plant based on various characteristics which is described in more detail below.  If there aren't any possible plants then create one in the next location based off the expected transplanter spacing.  
+\item[Step 4] Repeat the previous step, but starting at the end of the segment and find the next most likely plant by working backwards.
+\item[Step 5] Split the original segment into smaller segments using the most likely plants as new points.  If the new segments are too short to contain plants then the algorithm is finished, otherwise recursively go back to step 1 for each of the new segments.
+\end{description}}
+
+TODO include figure of algorithm
+
+In order to determine the most likely plant, each possible plant is assigned a penalty value.  This value calculated as
+
+Penalty = (L + P + C) / B
+
+where those variables represent
+
+\begin{description}
+\item[Lateral Error (L)] How far off the plant is from the expected line segment.
+\item[Projection Error (P)] How far away the plant's projection onto the segment is from where the closest expected plant would be.
+\item[Closeness (C)] How far away the plant is from the start/end of the segment, with the idea that the lateral and projection errors become less reliable the farther away you are from a known item's location.
+\item[Plant-Part Boost (B)] Based on what types of plant parts, for example leaves or blue stick parts, are found in the plant.
+\end{description}
+
+The idea behind working from the both directions at the same time is the start and end QR codes are known locations in the field, and thus plants near them can be more reliably detected. 
+
 
 \section{Stage 5 - Saving Field Map}
 \label{processing-stage5}
