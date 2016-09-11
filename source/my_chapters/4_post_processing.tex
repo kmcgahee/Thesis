@@ -133,6 +133,7 @@ where those variables represent
 
 The idea behind working from the both directions at the same time is the start and end QR codes are known locations in the field, and thus plants near them can be more reliably detected. 
 
-
 \section{Stage 5 - Saving Field Map}
 \label{processing-stage5}
+
+The final stage in the pipeline is generating the final field map.  This process first begins by assigning every plant in the field a unique number so it can be easily referenced by another program using the plant's coordinates.  This numbering begins with plant 1 at the start of the first row and then follows a serpentine pattern which can be seen in figure TODO.  This numbering system is chosen because it represents how researcher's are most likely inspect plants when walking through the field.  
