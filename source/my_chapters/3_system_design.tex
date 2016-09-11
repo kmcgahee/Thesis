@@ -13,6 +13,8 @@ A common way to encode information in a machine-readable format is to use a two 
 
 what we're using it for
 
+% How codes are constructured
+
 \subsection{Code Format}
 
 For this project Quick Response (QR) codes were selected as the barcode format. This is a standardized format that is license free and allows for error correction if part of the code is unreadable.  What I'm encoding
@@ -35,7 +37,7 @@ The base platform selected is the Husky A2000 mobile robot made by Clearpath Rob
 
 The BX982 receiver provides centimeter level accuracy when paired with a fixed base receiver broadcasting RTK correction signals.  For this application the fixed base is a Trimble Ag542 receiver with a <> antenna as shown in figure TODO.  The robot receiver and base receiver communicate over a <> MHz radio link.   The dual antenna design allows the robot to determine its heading, or yaw, to within approximately 0.1 degree.  This accurate yaw is important for geo-locating plants and QR codes within images, as well as allowing the robot to operate autonomously as discussed in section <TODO>. 
 
-\subsection{Camera and Lighting}
+\subsection{Cameras and Lighting}
 
 The Canon 7D contains a <> megapixel sensor and is fitted with a fixed 20mm focal length wide-angle lens.  The Canon 7D contains an Advanced Photo System type-C (APS-C) sensor rather than a full frame 35mm sensor, which paired with the 20mm lens gives a horizontal angle of view of <> degrees and a vertical view of <> degrees.  
 
@@ -58,7 +60,7 @@ Mention wifi/router/laptops.
 
 These packages are found 
 
-\section{Base Functionality}
+\subsection{Base Functionality}
 
 When the Husky was purchased the main computer came installed with the Robot Operating System (ROS), which is popular open-source framework that provides many of the same services as traditional operating system such as inter-process communication and hardware-abstraction.  One major benefit of ROS is it allows different functionality to be split up into separate processes, referred to as Nodes.  This promotes code re-use and prevents one component from crashing the entire system.   The Nodes that were pre-installed on the Husky are listed below
 
@@ -68,11 +70,11 @@ Husky Node
 
 These base packages allowed the robot to be manually driven by the logitech controller shown in figure TODO.  The buttons did <> and the joystick sent <> commands.  
 
-\section{Cruise Control}
+\subsection{Cruise Control}
 
 However, when driving through the field it's important to maintain a constant speed to ensure all QR codes and plants are imaged.  With the basic teleop functionality this was difficult to achieve while also keeping the robot centered in the middle of the row. To solve this issue the researcher extended the teleop node to include cruise control functionality that is commonly seen in automobiles.  TODO explain the buttons.  
 
-\section{Automated Control}
+\subsection{Automated Control}
 
 While this cruise control feature made it feasible to manually drive the robot through the field, for large experiments this was a tedious task that required ten or more hours of keep the robot centered between the rows.  
 
