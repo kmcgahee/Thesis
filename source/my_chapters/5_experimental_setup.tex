@@ -4,32 +4,71 @@
 \chapter{Experimental Setup}
 \label{experiment}
 
+The mapping process was evaluated at the Land Institute on a type of intermediate wheat grass (IWG), commonly referred to as Kernza.  The Land Insttitute is one of the worlds leading researchers in perinial agriculture focusing on <>. This experiment involved
+
 %5.1.1.	Crop type, time of year, location, researcher, etc 
 
 \section{Field Setup}
 \label{experiment-field}
 
-%5.1.2.	Size of field - number of rows, number of plants
-%5.1.3.	Two row transplanter.  Straight rows - doesn't matter north/south.
+A transplanter, shown in figure TODO, was used to plant two rows a time.  The transplanter works by a series of six deposit cylinders rotating at a constant rate.  When <> hits a plant is ejected, a small amount of water is applied to the plant and the rolling wheels help press the soil down around the plant.  
+
+The six deposit cylinders rotate so that each cylinder is spaced 12 inches apart.  Plants are placed in every other cylinder which results in 24 inches between successive plants.  The QR codes indicating the start of a new group are placed in the empty cylinders between two plants, which means the use of QR codes does not increase the overall size of the field. 
+ 
+The spacing between each row on the transplanter was 36 inches. 
+
+The field consisted of approximately 25,000 plants split into 97 individual rows.  After the field was planted the QR code marking the start and end of each row were manually placed.
+
 %5.1.4.	Figure of transplanter.  
-%5.1.5.	QR codes automatically deposited as plants.  
-%5.1.6.	Row end codes placed manually.  
 
 \section{Mapping Window}
 
+An important decision is whether to map during the day or at night.  The biggest challenge of mapping during the day is the ability to provide consistent lighting.  Changes in scene lighting, for example between clouds and direct sun, can affect the color of plants and blue sticks and potentially cause under or over-exposure of QR codes.  Daytime lighting can be made more consistent by using a shade cover over the field of view of the images.  However this depends on the sun being high enough in the sky for the shading to work, which limits the total amount of time images can be collected each day.  
+
+The shade size can always be increased or placed at an angle to account for the sun angle, however this increases cost, design complexity and makes the platform more susceptible to wind gusts.  
+
+This limited time window 
+
+
+
+
+
+% Importance of mapping before it rains.
 %5.2.3.	Mapping at nighttime vs. daytime.   Importance of shade.
+
+% Not enough high-sun lighting during day to use umbrellas.
+% Need to map before it rains.  
+% Easier to have free time at night.
 
 % Include equation for shade. 
 % Include figure for shade.  
 
 \section{Camera Setup}
 
-%5.2.2.	Setting up cameras (manual, ISO, shutter speed, white balance, mode, etc)
+An important step in ensuring the mapping process is robust is choosing the correct camera options. 
 
-% JPG vs RAW
+''' delete ? '''
+ Some of these options will vary in how they're determined between day and night-time mapping, because at night the available light is much more restricted.  Since night-time 
+''''
+
+The first option selected is the shooting mode, as that defines what settings are available to change.  The preferred shooting mode is Manual since that will allow the exposure time, aperture and sensitivity to be set to constant values.  Under controlled lighting conditions this will keep a consistent scene luminance and prevent any additional latency due to the camera calculating these settings before exposing a new image.
+
+The maximum exposure time is determined based on the speed of the robot and maximum allowed translation in the QR codes.  If the exposure time is set too high the black and white squares making up the QR codes will start to blend together and the code will be unreadable.  
+
+<TODO> put in equation 
+
+The aperture is set to a large diameter to maximize the amount of luminance since the exposure time is relatively short for the amount of light available.  However when the lens is fully open, an f-stop of f/2.8, the depth of field is noticeable reduced and it becomes more difficult to keep the QR codes in focus as the camera slightly varies in height as it moves through the field.  Therefore an f-stop of f/4 was chosen which provides a good trade-off between depth of field and luminance.  Also compared to f/2.8, an aperture of f/4 will have less noticeable lens effects such as distortion and vignetting which will result in higher quality images.  
+
+The light sensitivity of the sensor, commonly specified as an International Standards Organization (ISO) rating, is set last by inspecting the image in the field to achieve a desirable scene luminance.  Using the two LED bars per camera required an ISO of 1000.  If the ISO is set too high then sensor noise becomes significant which decreases the robustness of the mapping.  If too high of an ISO is required, then the aperture can be made larger or by adding more external light sources.  
+
+The white-balance is set to a fixed setting chosen to match the same color of light as the LED bars, which is listed as 6000 Kelvins.  Many cameras offer both a Flash and Cloudy white balance which are both centered around 6000K.   Preliminary field tests indicate both options produce very similar results, so the Flash setting was used.   
+
+Auto-white balance mode should not be used as most images will not contain a QR code for reference and as a result many images of plants will vary in chromacity. 
+
+Finally the image format is selected between raw and the Joint Photographic Experts Group (JPEG) format.  Raw images store the pixel readings directly from the sensor, thus no information from the exposed image is lost.  The JPEG format on the other hand typically merges adjacent pixels from the Bayer filter and applies a compression algorithm to reduce the file size.  Even though the compression algorithm produces image artifacts and reduces the quality of the QR codes, this does not reduce the effectiveness of the post-process pipeline. For the Canon 7D camera, raw image are around 15 megabytes (MB) larger and require a conversion to a bitmap format before being useful for post-processing.  This format conversion requires approximately 5 to 10 seconds per image and adds a significant amount of time to the post-processing pipeline.  For these reason the JPEG format is used for mapping.
 
 \section{Robot Operation}
 
-%5.2.1.	Robot used in cruise control mode.  
+In section <TODO> it was discussed that the robot can operate in either cruise control mode or a fully autonomous mode.  In this experiment the robot was used in cruise control mode, mainly because at the time there were not any tools available to view and edit the waypoints used by the robot.  When generating a set of waypoints from the transplanter path, the waypoints at the row ends need to be edited to prevent the robot from driving in too rough of field conditions, and also to prevent from turning before the end of the row and running over plants. 
 
-
+Even though the robot was operating in cruise control mode, the path of the robot was recorded and it's possible to have the robot retrace this path in autonomous mode.  This is useful for autonomously collecting plant data which is used for monitoring plant traits such as height or greenness.
