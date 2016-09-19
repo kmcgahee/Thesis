@@ -6,17 +6,29 @@
 
 \section{Code Detection}
 
-%6.1.	Percentage of QR codes that were detected
-%6.2.	Analysis of why QR codes weren’t detected – including figures of each
-% average code per image
+From the 4581 codes in the field, all but 2 were automatically detected by the first stage of the post-processing pipeline.  However 43 codes were not able to be read by the ZBar program.  It is unknown why the 2 undetected codes were not detected, but the most likely reasons are they were accidentally buried or they did not appear in any images.  
+
+Since each of the unreadable codes were placed in a special review directory as described in section <TODO> it was straightforward to determine the reason each code couldn't be read.  The most likely cause was a printer error which caused a small section of the code to not be printed.  This printer error affected 25 of the 43 unreadable codes.  9 codes were partially blocked by field debris or insects sitting on the code.  7 had dirt on the code, which most likely splashed up during transplanting. And finally 2 codes were too blurry too be read successfully.  Examples of each of these issues can be seen in figure TODO. 
+
+The codes affected by printer error could be reduced by better inspecting the codes before planting or by using a different type of printer.
+
+%6.2.	 figures of each unreadable codes
+
+\section{Plant Localization}
+
+Before planting the number of plants in each group were manually counted. However, it is unknown exactly how many plants ended up in the field because some plants were discarded during the transplanting process.  So the sum of the pre-counted plants, 25560, is the maximum number of plants that could be found in the field.  
+
+The plant localization algorithm detected 24269 plants in the images and created 335 plants where no plant was detected, but where one should have been.  This resulted in a total of 24604 plants in the final map indicating 956, or roughly 1 out of every 25, plants were discarded during transplanting.  For this experiment these results were considered reasonable. 
+
+Blue sticks were only found in 23\% of the plants that were detected in the images, however all plants should have had a blue stick marker.  The reason for this poor result was due to the lack of saturation in the blue sticks which made it difficult to find a threshold that didn't also detect the blue hues in the soil.  
+
+% TODO how to find blue stick problem. 
+
+The assigned coordinates of the creates plants were projected back onto images that contained those world coordinates, and an arbitrary 10 centimeter box was drawn on the image to indicate where the plant should have been.  Fifty of these debug images were manually analyzed and 47 of them closely matched an actual plant in the image that was either dead or mostly buried under soil.  The remaining 3 plants were either completely buried or more likely a gap occurred in the field were no plant exists.  
 
 \section{Mapping Accuracy}
 
 %6.3.	Average (absolute) error of QR codes in forward/lateral direction
 %6.5.	We didn’t really survey any plants, but I could have Lee do that for me now before it gets too cold?
-
-\section{Plant Localization}
-
-%6.4.	Total number of plants detected, total number ‘created’
 
 \section{Time Analysis}

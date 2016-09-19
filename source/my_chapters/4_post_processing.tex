@@ -124,6 +124,8 @@ Penalty = (L + P + C) / B
 
 where those variables represent
 
+what happens if really no plant there?
+
 \begin{description}
 \item[Lateral Error (L)] How far off the plant is from the expected line segment.
 \item[Projection Error (P)] How far away the plant's projection onto the segment is from where the closest expected plant would be.
@@ -137,3 +139,5 @@ The idea behind working from the both directions at the same time is the start a
 \label{processing-stage5}
 
 The final stage in the pipeline is generating the final field map.  This process first begins by assigning every plant in the field a unique number so it can be easily referenced by another program using the plant's coordinates.  This numbering begins with plant 1 at the start of the first row and then follows a serpentine pattern which can be seen in figure TODO.  This numbering system is chosen because it represents how researcher's are most likely inspect plants when walking through the field.  
+
+% TODO shift coordinate system
