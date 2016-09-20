@@ -24,11 +24,48 @@ Blue sticks were only found in 23\% of the plants that were detected in the imag
 
 % TODO how to find blue stick problem. 
 
-The assigned coordinates of the creates plants were projected back onto images that contained those world coordinates, and an arbitrary 10 centimeter box was drawn on the image to indicate where the plant should have been.  Fifty of these debug images were manually analyzed and 47 of them closely matched an actual plant in the image that was either dead or mostly buried under soil.  The remaining 3 plants were either completely buried or more likely a gap occurred in the field were no plant exists.  
+The assigned coordinates of the creates plants were projected back onto images that contained those world coordinates, and an arbitrary 10 centimeter box was drawn on the image to indicate where the plant should have been.  Fifty of these debug images were manually analyzed and 47 of them closely matched an actual plant in the image that was either dead or partially buried under soil.  The remaining 3 plants were either completely buried or more likely a gap occurred in the field where no plant exists.  
 
 \section{Mapping Accuracy}
 
-%6.3.	Average (absolute) error of QR codes in forward/lateral direction
-%6.5.	We didn’t really survey any plants, but I could have Lee do that for me now before it gets too cold?
+As discussed in section <TODO>, the coordinates of all the plants and QR codes had to be offset into the coordinate frame used by the Land Institute.  This was accomplished by manually surveying 10 codes using the Land Institute receiver and base-station and then calculating the northing and easting offsets that would make the average error zero.  
+
+After this offset is applied, the error of the 10 surveyed codes was calculated and can be seen in figure <TODO>.  The line of best fit runs through the origin and shows that the average error is indeed zero.    
+
+% TODO figure of errors showing each code as point on easting/northing error plot.
+
+The reason that codes were used to calculate the offset, rather than plants, is it's much easier for the post-processing to consistently identify the center of the code. 
+
+An additional 20 plants were surveyed to verify that their mapped positions were accurate enough to distinguish them from their neighboring plants.  All surveyed codes and plants were chosen randomly and evenly distributed throughout the field which indicates these errors are representative of all plants.   A similar plot showing the errors for each surveyed plant can be seen in figure <>.  The average error was <> which indicates the offsets calculated using the codes weren't biased.  The maximum errors in the easting and northing directions are <> and <>, respectively.  
+
+TODO are these errors small enough?
+
+
+
+The biggest source of errors from these measurement are errors in assigning an accurate time-stamp to each image.  These timing errors are primarily caused by camera latency and latency in the GNSS receiver.  Camera latency is the amount of time between when the data collection program commands the camera to take an image, and when the image is actually exposed.  GNSS latency is the amount of time between when an a position is calculated by the receiver, and when it is received by the data collection program.  
+
+TODO show that these errors are same order of magnitude.
+
+The forward motion of the robot was primarily in the northing direction which explains why these errors are around twice as large as the easting direction.  
+
+The additional errors in the surveyed plants compared to the codes is likely due to a larger discrepancy between what the post-processing pipeline detects as the center of a plant and what the human measures as the center of the plant. 
+
+TODO talk about GPS accuracy?
+
+\section{Plant Spacing}
+
+An additional check to verify the results is that the plant spacing should be consistent with the output rate of the transplanter.  The histogram below shows the distribution of plant spacing for all the plants.  As expected the most common plant spacing is around 24 inches, however the variances in plant spacing highlights the importance of mapping individual plants, rather than assuming even spacing.
+
+TODO insert histogram.
 
 \section{Time Analysis}
+
+An important consideration to the success of the mapping process is much time it takes to collect and analyze all of the images. For this experiment the robot speed and camera triggering rate were set as described in section <TODO>.  This resulted in a total driving time of approximately 10 hours spread over 4 different nights.  Each night required 30 minutes for setup and another 30 for tear-down, which resulted in a total of 4 additional hours.  
+
+During the 10 hours of driving, the robot collected <> images.  The timing analysis for the post-processing are presented in table <TODO>. These results were bench-marked on a Lenovo S431 ultra-book running a dual core i7-3687 CPU at 2.6 gigahertz (GHz) with 8 gigabytes (GB) of random access memory (RAM).  
+
+TODO insert table of stage timing.
+
+One thing to note is it's straightforward to run the first stage in parallel for each night images were collected, since these are independent sessions.
+
+TODO compare to manual survey
