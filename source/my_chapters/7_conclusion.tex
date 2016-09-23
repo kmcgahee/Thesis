@@ -4,86 +4,20 @@
 \chapter{Conclusion}
 \label{conclusion}
 
-This 
+The results of this research show that the image-based mapping process is a viable option for locating and identifying individual plants.  For the experiment discussed in this paper, it is estimated that the image-based mapping allowed the field to be mapped four times faster <TODO> than traditional manual surveying, and with less tedious work.  The average error of 6 centimeters <TODO verify> is comparable to manual surveying errors, and the worse case error of 12 centimeters <TODO verify> is well within the maximum error allowed to differentiate adjacent plants.  The group identification method successfully located all but 2 QR codes, which is a success rate of 99.96\%.  While the mapping process was successful, other important conclusions regarding the platform, plant markers, cameras and system-complexities can be drawn from the research and are discussed below.
 
-%Restate main thesis point and if supported or not.  
-% - Couple general statements supporting this.
-% - Don't simply repeat things that were in your paper. They have read it
-% - can be extended to more than just robot. 
+The image-based mapping is independent of the base platform is used, and the robot used in this experiment could easily be switched out for a simpler platform such as a manual push-cart.  A robot was used in this experiment based on the potential to automate the image collection step.  However, this research indicated two benefits of having a human present in the field during the image collection.  First is to detect if a camera stops taking pictures due to some error, and second is the ability to fix QR codes that are partially buried and covered by field debris.  The first issue could be mitigated by providing automatic feedback between the robot, user and data collection program and the second could be solved by walking through the field and fixing these codes before the robot drives itself through the field.  Both of these steps would be required for robust automated image collection.       
 
-%Answer the question "So What?"
-%Show your readers why this paper was important. Show them that your paper was meaningful and useful.
-% - make your conclusion go from specific to general. Think globally.
+%7.3.2.	Using Tags instead of sticks.  Space out more.  Useful for plant visibility.  
 
-%My summary/interpretation of the results. Important to be in the field.  Get feedback in real-time.  Manual-based %trigger mapping.
-
-%7.3.	Recommendations
-%7.3.1.	Paying close attention to camera settings.
-%7.3.2.	Using Tags instead of sticks.  Space out more. 
+TODO discuss cameras 
+% Move faster
 %7.3.3.	Faster cameras, lower latency
+%7.3.1. Importance of paying close attention to camera settings, constant white balance.
 
-\section{Code Detection}
+% System complexity - ability to set the camera settings, setting thresholds, user interface for post-processing.  
+% Other option - barcode scanner.  "trigger mapping". 
 
-From the 4581 codes in the field, all but 2 were automatically detected by the first stage of the post-processing pipeline.  However 43 codes were not able to be read by the ZBar program.  It is unknown why the 2 undetected codes were not detected, but the most likely reasons are they were accidentally buried or they did not appear in any images.  
+% Regardless of what type of platform used, important first steps in creating a mapping process that will allow... 
+The success of this new mapping process will allow researchers to increase the size of their experiments which will allow more variety in plant populations and an increase in the number of field repetitions among certain plant groups. This will lead to better selection and faster refinement of  
 
-Since each of the unreadable codes were placed in a special review directory as described in section <TODO> it was straightforward to determine the reason each code couldn't be read.  The most likely cause was a printer error which caused a small section of the code to not be printed.  This printer error affected 25 of the 43 unreadable codes.  9 codes were partially blocked by field debris or insects sitting on the code.  7 had dirt on the code, which most likely splashed up during transplanting. And finally 2 codes were too blurry too be read successfully.  Examples of each of these issues can be seen in figure TODO. 
-
-The codes affected by printer error could be reduced by better inspecting the codes before planting or by using a different type of printer.
-
-%6.2.	 figures of each unreadable codes
-
-\section{Plant Localization}
-
-Before planting the number of plants in each group were manually counted. However, it is unknown exactly how many plants ended up in the field because some plants were discarded during the transplanting process.  So the sum of the pre-counted plants, 25560, is the maximum number of plants that could be found in the field.  
-
-The plant localization algorithm detected 24269 plants in the images and created 335 plants where no plant was detected, but where one should have been.  This resulted in a total of 24604 plants in the final map indicating 956, or roughly 1 out of every 25, plants were discarded during transplanting.  For this experiment these results were considered reasonable. 
-
-Blue sticks were only found in 23\% of the plants that were detected in the images, however all plants should have had a blue stick marker.  The reason for this poor result was due to the lack of saturation in the blue sticks which made it difficult to find a threshold that didn't also detect the blue hues in the soil.  
-
-% TODO how to find blue stick problem. 
-
-The assigned coordinates of the creates plants were projected back onto images that contained those world coordinates, and an arbitrary 10 centimeter box was drawn on the image to indicate where the plant should have been.  Fifty of these debug images were manually analyzed and 47 of them closely matched an actual plant in the image that was either dead or partially buried under soil.  The remaining 3 plants were either completely buried or more likely a gap occurred in the field where no plant exists.  
-
-\section{Mapping Accuracy}
-
-As discussed in section <TODO>, the coordinates of all the plants and QR codes had to be offset into the coordinate frame used by the Land Institute.  This was accomplished by manually surveying 10 codes using the Land Institute receiver and base-station and then calculating the northing and easting offsets that would make the average error zero.  
-
-After this offset is applied, the error of the 10 surveyed codes was calculated and can be seen in figure <TODO>.  The line of best fit runs through the origin and shows that the average error is indeed zero.    
-
-% TODO figure of errors showing each code as point on easting/northing error plot.
-
-The reason that codes were used to calculate the offset, rather than plants, is it's much easier for the post-processing to consistently identify the center of the code. 
-
-An additional 20 plants were surveyed to verify that their mapped positions were accurate enough to distinguish them from their neighboring plants.  All surveyed codes and plants were chosen randomly and evenly distributed throughout the field which indicates these errors are representative of all plants.   A similar plot showing the errors for each surveyed plant can be seen in figure <>.  The average error was <> which indicates the offsets calculated using the codes weren't biased.  The maximum errors in the easting and northing directions are <> and <>, respectively.  
-
-TODO are these errors small enough?
-
-
-
-The biggest source of errors from these measurement are errors in assigning an accurate time-stamp to each image.  These timing errors are primarily caused by camera latency and latency in the GNSS receiver.  Camera latency is the amount of time between when the data collection program commands the camera to take an image, and when the image is actually exposed.  GNSS latency is the amount of time between when an a position is calculated by the receiver, and when it is received by the data collection program.  
-
-TODO show that these errors are same order of magnitude.
-
-The forward motion of the robot was primarily in the northing direction which explains why these errors are around twice as large as the easting direction.  
-
-The additional errors in the surveyed plants compared to the codes is likely due to a larger discrepancy between what the post-processing pipeline detects as the center of a plant and what the human measures as the center of the plant. 
-
-TODO talk about GPS accuracy?
-
-\section{Plant Spacing}
-
-An additional check to verify the results is that the plant spacing should be consistent with the output rate of the transplanter.  The histogram below shows the distribution of plant spacing for all the plants.  As expected the most common plant spacing is around 24 inches, however the variances in plant spacing highlights the importance of mapping individual plants, rather than assuming even spacing.
-
-TODO insert histogram.
-
-\section{Time Analysis}
-
-An important consideration to the success of the mapping process is much time it takes to collect and analyze all of the images. For this experiment the robot speed and camera triggering rate were set as described in section <TODO>.  This resulted in a total driving time of approximately 10 hours spread over 4 different nights.  Each night required 30 minutes for setup and another 30 for tear-down, which resulted in a total of 4 additional hours.  
-
-During the 10 hours of driving, the robot collected <> images.  The timing analysis for the post-processing are presented in table <TODO>. These results were bench-marked on a Lenovo S431 ultra-book running a dual core i7-3687 CPU at 2.6 gigahertz (GHz) with 8 gigabytes (GB) of random access memory (RAM).  
-
-TODO insert table of stage timing.
-
-One thing to note is it's straightforward to run the first stage in parallel for each night images were collected, since these are independent sessions.
-
-TODO compare to manual survey
