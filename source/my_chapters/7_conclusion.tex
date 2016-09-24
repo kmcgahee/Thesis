@@ -8,16 +8,12 @@ The results of this research show that the image-based mapping process is a viab
 
 The image-based mapping is independent of the base platform is used, and the robot used in this experiment could easily be switched out for a simpler platform such as a manual push-cart.  A robot was used in this experiment based on the potential to automate the image collection step.  However, this research indicated two benefits of having a human present in the field during the image collection.  First is to detect if a camera stops taking pictures due to some error, and second is the ability to fix QR codes that are partially buried and covered by field debris.  The first issue could be mitigated by providing automatic feedback between the robot, user and data collection program and the second could be solved by walking through the field and fixing these codes before the robot drives itself through the field.  Both of these steps would be required for robust automated image collection.       
 
-%7.3.2.	Using Tags instead of sticks.  Space out more.  Useful for plant visibility.  
+The least successful aspect of the experiment was the use of dyed blue sticks acting as plant-markers.  As discussed in section <TODO> these wooden sticks suffered from inconsistent <TODO> and didn't reflect enough light to appear saturated in the images.  An alternative option is to use colored, plastic square markers that are pierced through un-dyed wooden sticks.  To avoid large amounts of plastics being distributed in the field these markers would not need to be on every plant, but rather every 4 or 5 plants.  If there is very little field debris or weeds then these plant markers may not be necessary at all. 
 
-TODO discuss cameras 
-% Move faster
-%7.3.3.	Faster cameras, lower latency
-%7.3.1. Importance of paying close attention to camera settings, constant white balance.
+The limiting factor on how quickly images could be collected was the maximum trigger rate of the Canon 7D cameras.  Additionally these cameras had an indeterminate latency that led to positional errors and suffered from occasional crashes with both the camera hardware and the software used to interact with the camera.  A potentially better option would be to use a camera originally designed to transfer images over the Universal Serial Bus (USB) and equipped with a high-resolution lens.  These cameras typically have much higher capture rates and were intended to be used for scientific or robotic applications, unlike the Canon's which were primarily intended for photographers. 
 
-% System complexity - ability to set the camera settings, setting thresholds, user interface for post-processing.  
-% Other option - barcode scanner.  "trigger mapping". 
+Perhaps the biggest conclusion drawn from the research is the importance of managing complexity in an application that is primarily intended to be used by researchers.  Using images adds complexity in the fact that camera settings have to be setup carefully, and the thresholds in the post-processing have to be chosen to work with both the chromacity and lumination of the images.  These thresholds can vary over multiple experiments due to slight changes in environmental lighting and it's difficult to find a set of values that work well for all scenarios.     
 
-% Regardless of what type of platform used, important first steps in creating a mapping process that will allow... 
-The success of this new mapping process will allow researchers to increase the size of their experiments which will allow more variety in plant populations and an increase in the number of field repetitions among certain plant groups. This will lead to better selection and faster refinement of  
+TODO mention trigger mapping with barcode scanner?
 
+Regardless of what type of equipment is selected to collect images, this paper presents important first steps in creating a robust mapping process that will allow researchers to increase the size of their experiments. This will allow more variety in plant populations and an increase in the number of field repetitions among certain plant groups which will lead to better selection and faster refinement of.  
