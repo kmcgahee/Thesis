@@ -4,22 +4,48 @@
 \chapter{Introduction}
 \label{introduction}
 
-Introduction to the introduction.  Give a big picture without going into the background context. 
-This thesis describes ... 
-What paper presents
+Recent research shows that crop production must increase in order to meet the demand created by a quickly growing world population.  This increase in production is supported by new automated technologies that allow both researchers and farmers to operate more efficiently.  One such technology is the means to automated means to develop a field map.  
+
+Distinguish between plots/plants and seeds vs. transplants.     
+
+Increase in scale facilitates the need for automated solutions to solve problems that were traditionally done manually.  One of these challenges is creating a field map.
+
+  along with limited field resources, requires both researchers and farmers to become more efficient.  Researchers benefit from being able to scale up the size of 
+
+This technology requires an accurate map of the field. 
+
+How that can benifit from mapping.  
+
+created new challenges 
+   which in turn have increased the need of new technologies for facilitating this growth.
+
+General statement about agriculture and the need to go large scale.  Developments in farm related technology have increased the importance of locating individual plants in the field.  Variations among applications and crops require   Planting seeds vs plants.  They need different solutions.  Turnkey solutions have been developed for   In addition some applications require assigning plants to a specific group, for example to differentiate between genetic varieties.   
+
+This thesis describes a novel mapping process based on computer vision techniques and shows its effectiveness in locating and identifying transplants.
 
 \section{Mapping and Identification}
-%1.2.1.	What mapping/identification is (assigning coordinates + row numbers, family IDs)
-% Planting seeds vs plants
-%1.2.2.	How accurate must be (to distinguish from other plants)
+
+The mapping process, which refers to creating a field map, is split into two smaller processes.  The first is determining the location of each plant within the field and the second is determining which group an individual plant belongs to. These are described in more detail below. 
+
+The first goal of field mapping is to determine the coordinates of each plant in the field with respect to one or more reference frames.  Depending on the application these could be a local field reference frame or a global frame such as lat/long/alt <TODO>.  Since the plants are fixed to the earth this is a two-dimensional mapping problem and third dimension, such as altitude is not required.  In addition to assigning coordinates it's also useful to determine the row number that each plant is found in.  This first sub-process is referred to as plant mapping. 
+
+Since plants in the field may not all be identical, for example they may have variations in their genetics, then this requires the mapping process be able to assign a unique group label to each plant.  These plant groups, or plant families, are known prior to planting and the challenge is determine where each plant group ends up in the field.  This process of assigning a plant to a group of plants is referred to as plant identification (ID).
+
+
+% Traditional mapping. 
 %1.2.3.	Why it needs to be somewhat automated
-%1.2.4.	Thesis statement about using image based mapping
 
 \section{Applications}
 1.3.1.	Benefits Perennial agriculture research - the need to locate same plant year after year.  Talk about Land Institute.
 1.3.2.	Also benefits one year crops because it allows easy look-up in database.  
 1.3.3.	Existing methods are slow or unreliable.
 1.3.4.	Other benefits of mapping - precise weeding - give more examples.
+% Why map altitude?
+
+\section{Image-Based Mapping Process}
+
+% TODO merge "structure" section into this one. 
+% Locating as potential first step. 
 
 \section{Structure} 
  
