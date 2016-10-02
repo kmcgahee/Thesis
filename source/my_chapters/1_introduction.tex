@@ -21,6 +21,9 @@ created new challenges
 
 General statement about agriculture and the need to go large scale.  Developments in farm related technology have increased the importance of locating individual plants in the field.  Variations among applications and crops require   Planting seeds vs plants.  They need different solutions.  Turnkey solutions have been developed for   In addition some applications require assigning plants to a specific group, for example to differentiate between genetic varieties.   
 
+% Traditional mapping. 
+%1.2.3.	Why it needs to be somewhat automated
+
 This thesis describes a novel mapping process based on computer vision techniques and shows its effectiveness in locating and identifying transplants.
 
 \section{Mapping and Identification}
@@ -31,25 +34,22 @@ The first goal of field mapping is to determine the coordinates of each plant in
 
 Since plants in the field may not all be identical, for example they may have variations in their genetics, then this requires the mapping process be able to assign a unique group label to each plant.  These plant groups, or plant families, are known prior to planting and the challenge is determine where each plant group ends up in the field.  This process of assigning a plant to a group of plants is referred to as plant identification (ID).
 
-
-% Traditional mapping. 
-%1.2.3.	Why it needs to be somewhat automated
-
 \section{Applications}
-1.3.1.	Benefits Perennial agriculture research - the need to locate same plant year after year.  Talk about Land Institute.
-1.3.2.	Also benefits one year crops because it allows easy look-up in database.  
-1.3.3.	Existing methods are slow or unreliable.
-1.3.4.	Other benefits of mapping - precise weeding - give more examples.
-% Why map altitude?
 
-\section{Image-Based Mapping Process}
+There are many applications where a field map is useful.  One application is for perennial agriculture where plants die and then re-grow each year.  Having a field map with accurate coordinates allow the same plants to be tracked over multiple years.
 
-% TODO merge "structure" section into this one. 
-% Locating as potential first step. 
+An extension of this application, which applies to both perennial and annual agriculture, is automatic plant lookup within a database.  For example if a researcher needed to record notes or measurements of a plant within an un-mapped field they would likely need to manually enter in a plant number to retrieve that plant's entry within the database.  However if they were equipped with a Global Navigtation Sattelite System (GNSS) receiver they would be able to automatically retrieve the plants entry based on where the researcher was standing in the field, assuming the database supports this functionality. 
 
-\section{Structure} 
- 
-% Specifically what this paper covers.
-% Describe what's in chapters and why.  
-% Then present results which show that the mapping is a successful (causually show results.)
-% Conclusion synthesis these results and provides recommendations based on this research.   
+An important  
+1.3.4.	Other benefits of mapping - precise weeding - give more examples.  Not all of the field is transplanted. 
+% Not required but allows field survey.  Water content - drainage systems.  Why map altitude?
+
+\section{Mapping Process Overview} 
+
+The image-based mapping process as can be conceptually broken down into three parts.  The first is the mapping equipment which includes the platform that transverses the field as well as the camera or cameras used to collect images.  The second part consists of additional items placed in the field that enable plant identification or make the mapping process more robust.  The combination of the first two parts is referred to the system design which is described in Chapter 3 <TODO ref>. 
+
+The third part or the mapping process is converting the images into a useful field map.  This involves using image-processing techniques to extract meaning information from the images, such as the locations of plants, as well as other grouping and clustering algorithms.  These algorithms are applied in sequential steps which collectively are referred to as the post-processing pipeline.  This section of the mapping process is covered in Chapter 4. 
+
+The next two chapters of this thesis, 5 and 6, discuss applying this image-based mapping process to a large-scale experiment conducted at the Land Institute.  The final chapter summarizes the findings the research and covers the important lessons learned during this experiment.
+
+Alternative mapping exists, but these typically do not address the issue of plant identification.  These methods are covered in the following chapter, Chapter 2 <TODO ref?>, along with a brief background on the coordinate frames and projection models used in this research.
