@@ -108,6 +108,8 @@ This process was accomplished using the Dynamic Sensing Program (DySense), which
 
 Similar to how ROS splits up different functionality into processes, DySense can split sensor drivers into processes which allows them to be written in any popular programming language.  The camera sensor driver was written in C# and used the EOS Digital Software Development Kit (EDSDK) to interact with the camera.  This driver allows the images to be downloaded from the camera in real-time, given a unique file name and assigned a time stamp of when the image was exposed.
 
+Knowing the platform position, orientation and camera offsets in the platform frame allow the positions and orientations of each camera 
+
 TODO go over how data is collected
 
 storing height above ground and height above ellipsoid separately.   
