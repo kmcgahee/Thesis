@@ -80,6 +80,12 @@
 \usepackage{setspace} % Controls line spacing
 \usepackage[margin=1in]{geometry} % Sets page margins to 1 inch on all sides
 \usepackage[titles]{tocloft} % Adds leader dots to all entries in the table of contents
+%\usepackage{parskip} 
+
+% Blank line between paragraphs while keeping indents
+%\edef\restoreparindent{\parindent=\the\parindent\relax}
+%\usepackage{parskip}
+%\restoreparindent
 
 % +--------------------------------------------------------------------+
 % |
@@ -297,22 +303,21 @@
 % | command.
 % +--------------------------------------------------------------------+
 
-\input{chapter1.tex}
-\input{chapter2.tex}
-\input{chapter3.tex}
+%\input{chapter1.tex}
+%\input{chapter2.tex}
+%\input{chapter3.tex}
 
 % +--------------------------------------------------------------------+
 % | Uncomment the lines below to add additional chapters.
 % +--------------------------------------------------------------------+
 
-\input{my_chapters/1_introduction.tex}
+%\input{my_chapters/1_introduction.tex}
 \input{my_chapters/2_background.tex}
-\input{my_chapters/3_system_design.tex}
-\input{my_chapters/4_post_processing.tex}
-\input{my_chapters/5_experimental_setup.tex}
-\input{my_chapters/6_results_and_analysis.tex}
-\input{my_chapters/7_conclusion.tex}
-%\input{chapter5.tex}
+%\input{my_chapters/3_system_design.tex}
+%\input{my_chapters/4_post_processing.tex}
+%\input{my_chapters/5_experimental_setup.tex}
+%\input{my_chapters/6_results_and_analysis.tex}
+%\input{my_chapters/7_conclusion.tex}
 
 % +--------------------------------------------------------------------+
 % | References

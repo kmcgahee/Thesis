@@ -47,23 +47,35 @@ The camera coordinate system describes the locations of objects in the world rel
 
 \section{Coordinate Projections}
  
- An important step in the mapping process is converting between pixel and world coordinates, which is also the subject of many computer vision algorithms.  Since pixels are described in R2 <TODO> and world points in R3, this conversion requires a projection.  
+ An important step in the mapping process is converting between pixel and world coordinates, which is also the subject of many computer vision algorithms.  Since pixels are described in $\mathbb{R}^2$ and world points in $\mathbb{R}^3$, this conversion requires a projection.  
  
  However, before this can be defined a model must be chosen which describes how points in the world are projected onto the imaging sensor.  This section first presents the model used in this research and then discusses two equivalent methods that can be used for converting coordinates.  
  
  \subsection{Projection Model}
  
- A common choice for a thin, convex lens is the central perspective imaging model which can be seen in figure <TODO>. \
+ A common choice for a thin, convex lens is the central perspective imaging model which can be seen in figure \ref{projection_model}. \
  
-  TODO insert figure.
+<TODO draw coordinate frames.>
  
- This model is based on the concept of an ideal lens that's treated as an equivalent pin-hole, which implies the lens is perfectly focused and has no geometrical distortions.  The ideal lens will have two focal points along the optical axis which are shown in figure <TODO>.  The central perspective model defines the image plane to be at the focal point in front of the lens, which is the left focal point shown in figure <TODO>.  
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=4.5in]{figures/projection_model.png}
+    \caption[Projection model]{Central perspective imaging model showing the image plane in yellow.}
+    \label{projection_model}
+\end{figure}
+ 
+ This model is based on the concept of an ideal lens that is treated as an equivalent pin-hole, which implies the lens is perfectly focused and has no geometrical distortions.  The ideal lens will have two focal points along the optical axis which are shown in figure \ref{focal_points}.  The central perspective model defines the image plane to be at the focal point in front of the lens, which is the left focal point shown in the figure.  
 
- TODO insert figure.  
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2.5in]{figures/projections_two_focal.png}
+    \caption[Focal points]{Equivalent pin hole lens showing both focal points.}
+    \label{focal_points}
+\end{figure} 
 
  Points in the image plane can be described using two different coordinate frames.  The first is the sensor frame and the second is the pixel frame.  
  
- The origin of the sensor frame is located at the point where the optical axis intersects the image plane.  A point in this frame is described by $(x,y)$, where the axes are in the same direction as camera frame and are shown in blue in Figure <TODO>.  
+ The origin of the sensor frame is located at the point where the optical axis intersects the image plane.  A point in this frame is described by $(x,y)$, where the axes are in the same direction as camera frame and are shown in blue in figure \ref{projection_model}.  
  
  On the other hand, the origin of the pixel frame is located at the top left of the image plane and the x-axis increases to the right and the y-axis increases downwards.  Rather than $(x,y)$ a pixel's location is denoted as $(u,v)$.  The center of the image sensor is referred to as the principal point and is denoted $(u_0,v_0)$.
  
@@ -71,72 +83,158 @@ The camera coordinate system describes the locations of objects in the world rel
 
  \subsection{Projection Methods}
 
- The conversion between pixel and world coordinates can go both ways, and both are used in the post-processing pipeline.  However, going from pixel to world coordinates is used much more often and is slightly more challenging so that is what is presented in this section.  
+ The conversion between pixel and world coordinates can go both ways, and both are used in the post-processing pipeline.  However, going from pixel to world coordinates is used more often and is slightly more challenging so that is what is presented in this section. The conversion involves three frame transformations   
+\begin{center}
+ Pixel $(u,v)$ $\rightarrow$ Sensor $(x,y)$ $\rightarrow$ Camera $(X,Y,Z)$ $\rightarrow$ World $(E,N,U)$
+\end{center}
  
- This conversion involves three frame transformations which are shown below, along with a reminder of the coordinate names in each frame.     
+ This is referred to as a backwards projection, since it is projecting two-dimensional points back out into the world.  As mentioned above this is more challenging because depth information is lost during the forward projection as the image is captured.  There are many ways of recovering this depth information, which typically use multiple images or cameras.  However, the height of objects being mapped are relatively small and is not useful for this mapping application.  For that reason an assumption is made that every point in the world frame has a height of zero.  This reduces the world to a plane and results in a $\mathbb{R}^2$ to $\mathbb{R}^2$ mapping which is possible with a single image. 
+ 
+ There are two different methods for performing this backwards projection. The first method discussed operates in Euclidean space and is more intuitive to understand.  The second method builds on this method by instead working in Projective space which produces a more efficient conversion.
+ 
+ Both of these methods use the central perspective model and both make the same assumptions about the camera and lens.  These are:
+ \begin{itemize}
+ \item The lens does not cause any distortion. 
+ \item There is no skew or error in displacement in how the image sensor is positioned within the camera.
+ \item The focal length is exact.
+ \end{itemize}
 
- Pixel -> Sensor -> Camera -> World (UTM)
-  (u,v)    (x,y)     (X,Y,Z)   (E,N,U)
-
- This is referred to as a backwards projection, since it is projecting 2D points back out into the world.  As mentioned above this is more challenging because depth information is lost during the forward projection as the image is captured.  There are many ways of recovering this depth information, which typically use multiple images or cameras.  However, the height of objects being mapped are relatively small and is not useful for this mapping application.  For that reason an assumption is made that every point in the world frame has a height of zero.  This reduces the world to a plane and is an R2 to R2 <TODO> mapping which is possible with a single image. 
- 
- There are two different methods to performing this backwards projection. The first method discussed operates in Euclidean space and is more intuitive to understand.  The second method builds on this method by instead working in Projective space which produces a more efficient conversion.
- 
- Both of these methods use the central perspective model and both make the same assumptions about the camera and lens.  These are 
- <TODO make list>
-   - The lens does not cause any distortion. 
-   - There is no skew or error in displacement in how the image sensor is positioned within the camera.
-   - The focal length is exact.
+ All of these assumptions are false to some extent, and it's possible to correct these assumptions using certain camera calibration procedures <TODO cite>.  However, for the system presented in this research these effects are considered negligible.
    
- All of these assumptions are false to some extent, and it's possible to correct these assumptions using certain camera calibration procedures <TODO cite>.  However, for the system presented in this research these effects are considered negligible and add additional complexity.
-   
- Another assumption is the camera's orientation is relative to the ground.  However, typically these angles are measured with respect to the gravity vector, which on hills will not be orthogonal to the ground.  If the mapping is done on a hill then the simplest solution is to make sure the orientation about the platform's X and Y axes is zero.
+ Another assumption is the camera's orientation is relative to the ground.  However, typically orientation angles are measured with respect to the gravity vector, which on hills will not be orthogonal to the ground.  If the mapping is done on a hill then the simplest solution is to make sure the camera's orientation about the platform's X and Y axes is zero.
  
  \subsubsection{Euclidean Space}
  
- The first transformation is to convert pixel coordinates to sensor coordinates.  Using the frame definitions shown in figure <TODO ref>, this can be represented in matrix form as 
+ The first transformation is to convert pixel coordinates to sensor coordinates.  Using the frame definitions shown in figure \ref{projection_model}, this can be represented in matrix form as 
  
- [x,y] = [][u,v] + 
+\[
+\begin{bmatrix} x \\ y \end{bmatrix}
+=
+\begin{bmatrix} 
+ 0 & -\rho_h \\
+ \rho_w & 0 
+\end{bmatrix}
+\begin{bmatrix} u \\ v \end{bmatrix}
++
+\begin{bmatrix} \rho_h v_0 \\ \rho_w u_0 \end{bmatrix}
+\]
  
- where $\rho_w$ and $\rho_h$ are the width and height of each pixel in millimeters, and $u_0$ and $v_0$ are the pixel coordinates of the principal point. 
+ where $\rho_w$ and $\rho_h$ are the width and height of each pixel in millimeters, and $u_0$ and $v_0$ are the  coordinates of the principal point in pixels. 
  
- The next transformation is to convert from sensor coordinates to camera coordinates.  It's clear from figure <TODO> that if the sensor coordinates are combined with the focal length $f$ as
+ The next transformation is to convert from sensor coordinates to camera coordinates.  It's clear from the projection model that if the sensor coordinates are combined with the focal length $f$ as
+ \begin{center}
  $(x,y,f)$
+ \end{center}
+ then the result is a vector in the camera frame, but with units of millimeters rather than meters. The last frame transformation is to describe this vector in terms of the world frame.  This can be accomplished by a rotation matrix $R$
  
- then the result is a vector in the camera frame, but with units of millimeters rather than meters. 
+ \begin{equation}
+ \label{rotation_eq}
+ \begin{bmatrix} e \\ n \\ u \end{bmatrix}
+ =
+ R *
+ \begin{bmatrix} x \\ y \\ f \end{bmatrix}
+ \end{equation}
  
- The last transformation is to describe this vector in terms of the world frame.  This can be accomplished by a rotation and translation 
+ <TODO> switch to NED instead of UTM. Or just re-arrange.
  
- [e',n',u'] = R*(x,y,f) + T
+ where this rotation matrix is composed from the active, extrinsic rotations about the worlds X, Y and Z axes in that order, by angles $\phi$ (roll), $\theta$ (pitch) and $\psi$ (yaw).  These are the Tait-Bryan angles of the camera frame with respect to the world frame.  Technically this is a passive rotation by negative angles since the vector is changing frames, but using active rotations avoids a lot of double negative signs.
  
- where R is the rotation matrix
- 
-  R = Rx(phi)*Ry()*Rz()
+  \begin{align}
+  R &= R_z(\psi)*R_y(\theta)*R_x(\phi) \\
+    &= \begin{bmatrix} \cos(\psi)  & -\sin(\psi) & 0 \\ 
+                        \sin(\psi) & \cos(\psi) & 0 \\
+                         0         &   0         & 1  \end{bmatrix}
+       \begin{bmatrix} \cos(\theta) & 0 & \sin(\theta) \\ 
+                             0      & 1 &       0        \\
+                      -\sin(\theta) & 0 & cos(\theta) \end{bmatrix}
+       \begin{bmatrix} \ 1 &    0       & 0           \\ 
+                         0 & \cos(\phi) & -\sin(\phi) \\
+                         0 & \sin(\phi) & cos(\phi)  \end{bmatrix} \\
+    &= \begin{bmatrix} \cos(\theta)\cos(\psi) & \sin(\phi)\sin(\theta)\cos(\psi) - \cos(\phi)\sin(\psi) &  \sin(\phi)\sin(\psi) +  \cos(\phi)\sin(\theta)\cos(\psi) \\
+    \cos(\theta)\sin(\psi) & \cos(\phi)\cos(\psi) + \sin(\phi)\sin(\theta)\sin(\psi) &  \cos(\phi)\sin(\theta)\sin(\psi) - \sin(\phi)\cos(\psi) \\
+     -\sin(\theta) & \sin(\phi)\cos(\theta) & \cos(\phi)\cos(\theta)     \end{bmatrix}
+  \end{align}
   
-  where Rx, Ry and Rz are positive ... matrices about the camera's X, Y and Z frame
-  
-  TODO define Rx, Ry and Rz
-  
-  which results in 
-  
-  R = full descriptions. 
-  
-  
-  
-    
+ Lowercase coordinates $(n,e,d)$ in equation \ref{rotation_eq} are used to designate that these components are in the north, east and down directions, but the units are still in millimeters and this does not represent the world point yet.
  
- Lowercase coordinates (e',n',u') <TODO> are used to designate that this are in the east, north and up directions but the units are still in millimeters and this does not represent the world point yet.
+ The position of this vector in the world frame is given by the camera's world position
+
+ \begin{equation}
+ T = 
+ \begin{bmatrix} T_x \\ T_y \\ T_z \end{bmatrix} =
+ \begin{bmatrix} N_{cam} \\ E_{cam} \\ D_{cam} \end{bmatrix}
+ \end{equation}
+
+ The actual world point can be found by finding the intersection of this vector (n',e',d') with the flat plane of the Earth given by the equation D=0.  
  
- In order to find the world point 
+ This can be done by parameterizing the vector with $S$ as 
  
+ \begin{equation}
+ \label{parameter_ned}
+ \begin{bmatrix} N \\ E \\ D \end{bmatrix} =
+ S \begin{bmatrix} n' \\ e' \\ d' \end{bmatrix}
+ + \begin{bmatrix} T_x \\ T_y \\ T_z \end{bmatrix}
+ \end{equation}
  
+ plugging in the third component, D, into the plane equation and solving for
+ \begin{center}
+ $S = -T_z / d'$, 
+ \end{center}
+ which can be plugged back into equation \ref{parameter_ned}.  If d' is zero then the position vector is parallel to the Earth's surface and will never intersect it.   
+
+ While this method is easy to visualize, it requires multiple steps for each pixel that must be converted to world coordinates.  An alternate method is presented in the next section.
 
  \subsubsection{Projective Space}
  
- verify correct before writing this section
+ An ideal solution would be to describe the backwards projection from the pixel plane to the world plane as a single matrix that can be applied in one step.  In order to do this, coordinates in each frame must be converted into the Projective space which adds an extra coordinate.  This coordinate represents scale and a set of coordinates in this space are referred to as homogeneous coordinates.
+
+ There are many benefits to using homogeneous coordinates which is why they are commonly used in computer vision.  These benefits include
+ \begin{enumerate}
+ \item performing translations and rotations in a single matrix.
+ \item avoiding unnecessary division in intermediate calculations which is typically slower than other operations.
+ \item representing a coordinate at infinity with real numbers which is true when the extra coordinate is zero.
+ \end{enumerate}
+ 
+ In order to differentiate between regular Euclidean coordinates, homogeneous coordinates are followed by an apostrophe.  For example coordinates in the pixel frame can be described in Projective space as $(u',v',w')$ where 
+ 
+ \begin{center}
+ $u' = u*w'$ and $v'=v*w'$.
+ \end{center}
+ 
+ In backwards projection the pixel coordinates $(u,v)$ are what is known so $w'$ is always set to 1.  
+ 
+ In order to convert from pixel to sensor coordinates the same relationship using the pixel sizes and principal point are used, however when homogeneous coordinates are substituted this relationship can be described in a single matrix
+ 
+ \[
+ \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix}
+ =
+ \begin{bmatrix} 
+     0   & -\rho_h & \rho_h v_0 \\ 
+  \rho_w &    0    & \rho_w u_0 \\
+     0   &    0    &      1  
+ \end{bmatrix}
+ \begin{bmatrix} u' \\ v' \\ 1 \end{bmatrix}
+ \]
+ 
+ This is typically referred to as the inverse parameter matrix, or $K^{-1}$.
  
  The second transformation is to convert sensor coordinates to camera coordinates.  A consequence of defining the origin of the camera frame to be the location of the equivalent pin-hole is that all incoming rays of light converge to the origin of the camera frame.  This leads to the simple relationship using the focal length $f$ of
   
-  $x=f*X/Z$  and $y=f*Y/Z$
+  \begin{center}
+  $x=fX/Z$  and $y=fY/Z$
+  \end{center}
  
-  which can easily be derived by similar triangles.
+  which can easily be derived by similar triangles.  When described as homogeneous coordinates this relationship becomes 
+  
+  \begin{center}
+  $x'=fX$, $y'=fY$ and $z'=Z$
+  \end{center}
+  
+  or in matrix form
+  
+  [X,Y,Z] = [1/f 1/f 1] [x',y',z']
+  
+  
+  
+  
+  
