@@ -21,19 +21,20 @@ A key choice in any mapping process is the correct choice of coordinate frames. 
 
 \subsection{Latitude and Longitude}
 
-A common frame that is fixed to the Earth is a spherical coordinate frame, with the angles referred to as Latitude and Longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the World Geodetic System (WGS-84) which is the default datum used by the Global Positioning System (GPS) <TODO cite?>.  The third dimension is altitude, or elevation, is measured relative to the ellipsoid. 
+A common frame that is fixed to the Earth is a spherical coordinate frame, with the angles referred to as latitude and ongitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the World Geodetic System (WGS-84) which is the default datum used by the Global Positioning System (GPS) <TODO cite?>.  The third dimension is altitude, or elevation, is measured relative to the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
 
 \subsection{Universal Transverse Mercator (UTM)}
 
-In order to describe the points on the Earth's surface in a two-dimension plane, as is desired for mapping, a projection model must be used on the angular latitude and longitude coordinates.  The projection model used in this research is known as the Universal Transverse Mercator (UTM) which splits the Earth into 60 lateral bands as shown in the figure below.  In each zone an item is described by it's Easting and Northing coordinates.  
+In order to describe the points on the Earth's surface in a two-dimension plane, as is desired for mapping, a projection model must be used on the angular latitude and longitude coordinates.  The projection model used in this research is known as the Universal Transverse Mercator (UTM) which splits the Earth into 60 lateral bands as shown in figure <TODO ref>.  In each zone an item is described by its easting, northing and altitude coordinates.  However, due to how the platform coordinate system is defined, discussed in \ref{platform_coordinate_system}, it's beneficial to have the Z axis in the downward direction.  This requires the easting and northing be switched to maintain a right-handed coordinate system. Therefore, UTM coordinates are described by $(N,E,D)$.  Another important modification is that the Z, or down, component is measured relative to the ground, not the WGS-84 ellipsoid. 
 
 \subsection{Field Coordinate System}
 
-One issue with Easting and Northing described by UTM is that rows in a fields are not always planted north and south or east and west.  Many of the post-processing steps benefit from removing this relative field orientation, so a new field coordinate system is defined so the y-axis runs parallel to the rows and increases in the planting direction of the first row, the x-axis increases in the direction of increasing row numbers.  The origin is selected so that all items in the field have positive x and y coordinates.   Similar to UTM the units in this frame are meters.
+One issue with the easting and northing described by UTM is that rows in a fields are not always planted north and south or east and west.  Many of the post-processing steps benefit from removing this relative field orientation. A new field coordinate system is defined where the y-axis runs parallel to the rows and increases in the planting direction of the first row, and the x-axis increases in the direction of increasing row numbers.  The origin is selected so that all items in the field have positive x and y coordinates.   Similar to UTM the units of this frame are meters.  Coordinates in this frame are denoted $(x_f,y_f,z_f)$.
 
 \subsection{Platform Coordinate System}
+\label{platform_coordinate_system}
 
-Another useful coordinate system is one that's fixed to the platform that's moving through the field.  This platform coordinate system allows the relative spacing and orientation between the cameras and the GNSS <Todo already defined?> antenna to be specified.   Also this coordinate system defines how the platform's orientation is defined in terms of Euler angles, which is useful for accounting for non-level camera orientation. 
+Another useful coordinate system is one fixed to the platform holding the cameras.  This platform coordinate system allows the relative spacing and orientation between the cameras and the GNSS <Todo already defined?> antenna to be specified.   Also this coordinate system defines how the platform's orientation is defined in terms of Euler angles, which is useful for accounting for non-level camera orientation. 
 
 The axes of this coordinate system are shown in the figure below <TODO ref>, which defines the x-axis out of the front of the platform, the y-axis out the right hand side and the z-axis orthogonal in the downward direction.  
 
@@ -41,7 +42,7 @@ TODO the discussion for this is outside the scope of this Thesis.
 
 \subsection{Camera Coordinate System}
 
-The camera coordinate system describes the locations of objects in the world relative to the camera.  Typically a camera coordinate system is defined by the x-axis out of the right hand side of the camera, the y-axis out of the bottom and the z-axis along the optical axis.  <TODO cite>   However for this application an alternative camera coordinate system is defined which has the x-axis out of the top of camera, the y-axis out of the right side and the z-axis along the optical axis.  This is so when the camera is mounted on the platform facing the ground with the top forward, the camera axes will align with the forward-right-down platform coordinate system.  This makes the meaning of the Euler angles consistent.  The origin is defined to be located at the center of the imaging sensor as shown in the image below.
+The camera coordinate system describes the locations of objects in the world relative to the camera.  Typically a camera coordinate system is defined by the x-axis out of the right hand side of the camera, the y-axis out of the bottom and the z-axis along the optical axis.  <TODO cite>   However, for this application an alternative camera coordinate system is defined which has the x-axis out of the top of camera, the y-axis out of the right side and the z-axis along the optical axis.  This is so when the camera is mounted on the platform facing the ground with the top forward, the camera axes will align with the forward-right-down platform coordinate system.  This makes the meaning of the Euler angles consistent.  The origin is defined to be located at the center of the imaging sensor as shown in the image below.
 
 <TODO insert image from dysense wiki>
 
@@ -232,9 +233,63 @@ The camera coordinate system describes the locations of objects in the world rel
   
   or in matrix form
   
-  [X,Y,Z] = [1/f 1/f 1] [x',y',z']
+   \[
+   \begin{bmatrix} X_u \\ Y_u \\ Z_u \end{bmatrix}
+   =
+   \begin{bmatrix} 
+       1/f &   0   &  0 \\ 
+       0   &  1/f  &  0 \\
+       0   &   0   &  1  
+   \end{bmatrix}
+   \begin{bmatrix} x' \\ y' \\ z' \end{bmatrix}
+   \].
+   
+  The subscript $u$ denotes that these coordinates in the camera frame are unscaled, similar to how $(x,y,f)$ is not correctly scaled in the Euclidean method.  Also note that $(X_u, Y_u, Z_u)$ are not homogeneous coordinates.  This matrix is referred to as the inverse camera matrix, or $C^{-1}$.
   
+  The last frame transformation is to go from the camera to world frame and correctly scale the position vector.  This can be done in one step if homogeneous world coordinates $(N',E',D',S')$ are used.  In terms of the rotation matrix $R$ and translation vector $T$ defined in <TODO ref> and <TODO ref>  
   
+     \[
+     \begin{bmatrix} R^{-1} & -T \end{bmatrix}
+     \begin{bmatrix} N' \\ E' \\ D' \\ S' \end{bmatrix}
+     =
+     \begin{bmatrix} X_u \\ Y_u \\ Z_u \end{bmatrix}
+     \].
+     
+ If each element in R is denoted by it's row and column, and since the inverse of an orthogonal matrix is equal to it's transpose then this is expanded to
+ 
+      \[
+      \begin{bmatrix} r_{11} & r_{21} & r_{31} & -T_x \\
+                      r_{12} & r_{22} & r_{32} & -T_y \\
+                      r_{13} & r_{23} & r_{33} & -T_z \\
+      \end{bmatrix}
+      \begin{bmatrix} N' \\ E' \\ D' \\ S' \end{bmatrix}
+      =
+      \begin{bmatrix} X_u \\ Y_u \\ Z_u \end{bmatrix}
+      \]
+      
+  However, this matrix is clearly not invertible and the assumption that $D=0$ must be enforced.  Since $D'=D/S'$ then D' is also zero it can be removed along with the third column of the matrix.   After inverting this results in 
   
+  \[
+    \tilde{p} =
+    \begin{bmatrix} N' \\ E' \\ S' \end{bmatrix}
+      = 
+    \begin{bmatrix} r_{11} & r_{21} & -T_x \\
+                    r_{12} & r_{22} & -T_y \\
+                    r_{13} & r_{23} & -T_z \\
+    \end{bmatrix}^{-1}
+    \begin{bmatrix} X_u \\ Y_u \\ Z_u \end{bmatrix}
+  \]
+ 
+  Even though an entire column of the rotation matrix was discarded, no information was lost as this column can be described as the cross product of the first and second columns.  This inverted matrix is denoted $\xi^{-1}$, so that the entire projection can be represented as a single homography matrix
   
-  
+ \[ 
+ H = \xi^{-1} C^{-1} K^{-1} 
+ \].
+ 
+ Once $(N',E',S')$ is computed the actual northing and easting is simply the inhomogeneous coordinates
+ 
+ \begin{center}
+ $N=N'/S'$ and $E=E'/S'$
+ \end{center}
+ 
+ While it's not obvious, this result is indeed equivalent to the one derived in the first method.  This is verified symbolically in Appendix {TODO ref}.  
