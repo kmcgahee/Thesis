@@ -1,13 +1,11 @@
-% +--------------------------------------------------------------------+
-% | Appendix A Page (Optional)                                         
-% +--------------------------------------------------------------------+
-
 \cleardoublepage
 
-\chapter{Title for This Appendix}
+\usepackage[numbered,framed]{matlab-prettifier}
 
-\label{Appendix:Key1}
+\newfontfamily{\lstconsolas}{Consolas}
 
-Enter the content for Appendix A in the appendixA.tex file.  If you
-do not have an Appendix A, see comments in the etdrtemplate.tex file
-for instructions on how to remove this page.
+\chapter{Appendix A}
+\label{AppendixA}
+
+\lstinputlisting[style=Matlab-editor,caption=Sample code from Matlab]{matlab/projection_compare.m}
+
