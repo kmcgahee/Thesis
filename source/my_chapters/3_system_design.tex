@@ -2,42 +2,56 @@
 \cleardoublepage
 
 \chapter{System Design}
-\label{system}
+\label{chapter:system_design}
+
+The mapping system consists of the various components needed to capture, organize and locate images of the field, as well as any additional field items needed for identifying plants.  The proper design of the mapping system is the most important step in the overall mapping process.  Poor design leads to insufficient image quality, missing field coverage or improperly located images which no amount of post-processing can correct.  
+
+The first part of the system discussed is the markers used for plant identification, because the required size of these markers impose constraints on the rest of the system.  Next the base platform and additional equipment, such as cameras, is presented along with reasoning about nominal parameters such as vehicle speed and the camera height above the ground.  This chapter concludes by describing additional field markers which are not strictly necessary, but help improve the robustness of the mapping process. 
+
+\section{Plant Identification}
+\label{section:plantid}
+
+As mentioned in the introduction, the mapping process involves not just determining plant coordinates, but also assigning each plant to a group.  Each plant group is referenced by a unique identifier, such as 1035.  The method used in this research is to encode this information in a two-dimensional barcode that is placed at the beginning of each group of plants in the field.  Thus each barcode can be referenced only using its unique ID.  
+
+If a plant group needs to be planted in different parts of the field then a repetition letter is appended to the group number.  For example, three codes containing the text 1035A, 1035B and 1035C all belong to plant group 1035.  Since the two-dimensional barcodes are only placed at the beginning of the group it's critical to know the direction each row is planted in order to associate the correct set of plants with the plant ID.  Codes could be placed on both sides of each group to remove this added challenge, but this doubles the amount of construction time, field debris and chance of missing a code.  Instead the row direction is encoded in row markers which is discussed later in this chapter.
+
+\subsection{Code Format}
+\label{section:code_format}
+
+For this research project, Quick Response (QR) codes were selected as the barcode format. This is a standardized format that was made publicly available by Denso Corporation over 20 years ago.  It was first used for item tracking in the Japanese automotive industry, and has most recently become well known for encoding Uniform Resource Locators (URLs) for websites. <TODO ref article>.  Two important characteristics of this format is it can be read from any orientation, and it can still be read if part of the code is damaged.  Various other types of formats, such as Aztec or Micro QR, can encode information in slightly less number of squares by restricting the character encoding, but offer less error correction.  Also, at the time this research was conducted these alternate formats were not supported by any of the open-source readers that the researcher investigated. 
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[width=3in]{figures/generated_codes_1035.png}
+    \caption[2D barcode formats]{Comparison of 2D barcode formats encoding the text 1035 with high error correction.  From left to right: Quick Response (QR), Aztec and Micro QR.}
+    \label{barcode_formats}
+\end{figure} 
+
+\subsection{Size Constraint}
+
+For fields with thousands of different plant groups it's not feasible to place these QR codes by hand.  Therefore, they must fit through the deposit cylinders of the transplanter shown in figure <TODO ref experiment>.  In order to not get caught in the cylinders the codes cannot be larger than 2.5 centimeters in diameter. Since there needs to be a white margin around the actual QR code, the code itself ends up being roughly 2 centimeters.  The QR code format is split into different levels which define how many squares make up the code.  The first version is a grid of 21 by 21 squares and is shown in figure \ref{barcode_formats}.  This results in a maximum square size of only 1 millimeter.  This small square size requires the use of a high resolution camera and lens.  
+
+\subsection{Code Construction}
+
+The codes must be easy to produce due to the potentially large number of codes required for each field.  The <TODO> program can be used to generate all QR codes at once, and a thermal printer can print the codes on pot labels rapidly.  However, the pot labels need a solid base to stay upright and grounded during transplanting. The researchers at the Land Institute in Salina, Kansas, developed a biodegradable compost <TODO word this better> that the pot labels are inserted into.  An example of one of these QR codes can be seen in figure <TODO> 
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2in]{figures/qr_code_407.png}
+    \caption[QR code]{QR code printed on pot label and planted in field.}
+    \label{QR code}
+\end{figure}
+
+\section{Platform Design}
+\label{system-platform}
 
 Why use a robot?
 Autonomous
 less manual work 
 constant speed for consistent overlap
 easy to repeat
-Stable camera mount
-Everyone likes robots
 
-TODO
-
-\section{Plant Identification}
-\label{system-plantid}
-
-A common way to encode information in a machine-readable format is to use a two dimensional barcode.  These barcodes 
-
-what we're using it for
-
-% How codes are constructured
-
-\subsection{Code Format}
-
-For this project Quick Response (QR) codes were selected as the barcode format. This is a standardized format that is license free and allows for error correction if part of the code is unreadable.  What I'm encoding
-
-Figure 
-
-\subsection{Size Constraints}
-
-Need to make small...  Mention physical size to fit through transplanter.
-The standard defines 40 different sizes of codes ranging from a 21x21 grid up to a 170x170 grid.  The size, or version, is automatically chosen 
-
-Various other types of formats, such as <> or <>, allow information to be encoded in slightly less number of squares, but at the time of the research these formats weren't supported by any of the open-source readers that the researcher investigated.  
-
-\section{Platform Design}
-\label{system-platform}
+\subsection{Base Platform}
 
 The base platform selected is the Husky A2000 mobile robot made by Clearpath Robotics.  The Husky is a four wheeled differential drive robot measuring 30 inches long and 25 inches wide.  As seen in figure TODO a custom C-channel structure was added onto the top of the robot to enable it to image the field.  Attached to the front of the top structure are two Canon 7D digital single-lens reflex (DSLR) cameras. On the back are two antennas <TODO what kind> which attach to a Trimble BX982 global navigation satellite system (GNSS) receiver which is mounted to the top of the robot.   
 
@@ -102,19 +116,18 @@ For simplicity no filtering was used . For faster speeds it may be necessary.
 \section{Data Collection Software}
 \label{system-software}
 
-A critical part of the mapping process is being able to accurately associate each image with the position and orientation of the camera at the time the image was taken.  
+A critical part of the mapping process is being able to accurately associate each image with the position and orientation of the camera at the time the image was taken.  This process was accomplished using the Dynamic Sensing Program (DySense), which is an open-source data collection program that provides the means to obtain, organize and geo-locate sensor data.  This program was developed by the researcher in order to standardize data collection across various types of platforms and sensors.  A screen shot of DySense can be seen in figure \ref{dysense_screenshot}.
 
-This process was accomplished using the Dynamic Sensing Program (DySense), which is an open-source data collection program that provides the means to obtain, organize and geo-locate sensor data.  This program was developed by the researcher in order to standardize data collection across various types of platforms and sensors.  A screen shot of DySense can be seen in figure <>.
+Similar to how ROS splits different functionality into processes, DySense can split sensor drivers into processes which allows them to be written in any programming language.  The camera sensor driver is written in C\# and uses the EOS Digital Software Development Kit (EDSDK) to interact with the camera.  This driver allows the images to be downloaded from the camera in real-time and assigns each one a unique file name and UTC time stamp of when the image was exposed.
 
-Similar to how ROS splits up different functionality into processes, DySense can split sensor drivers into processes which allows them to be written in any popular programming language.  The camera sensor driver was written in C# and used the EOS Digital Software Development Kit (EDSDK) to interact with the camera.  This driver allows the images to be downloaded from the camera in real-time, given a unique file name and assigned a time stamp of when the image was exposed.
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=4.5in]{figures/dysense2.png}
+    \caption[Data collection program]{Screenshot of the data collection program.}
+    \label{dysense_screenshot}
+\end{figure}
 
-Knowing the platform position, orientation and camera offsets in the platform frame allow the positions and orientations of each camera 
-
-TODO go over how data is collected
-
-storing height above ground and height above ellipsoid separately.   
-
-TODO include figure of DySense
+DySense also uses GPS and IMU drivers to record the platform's position and orientation.  This knowledge of the platform state, as well as the camera offsets in the platform frame, allows the positions and orientations of each camera to be calculated at the same time as every image.    
 
 \section{Additional Markers}
 \label{system-markers}
