@@ -33,44 +33,94 @@ For fields with thousands of different plant groups it's not feasible to place t
 
 \subsection{Code Construction}
 
-The codes must be easy to produce due to the potentially large number of codes required for each field.  The <TODO> program can be used to generate all QR codes at once, and a thermal printer can print the codes on pot labels rapidly.  However, the pot labels need a solid base to stay upright and grounded during transplanting. The researchers at the Land Institute in Salina, Kansas, developed a biodegradable compost <TODO word this better> that the pot labels are inserted into.  An example of one of these QR codes can be seen in figure <TODO> 
+The codes must be easy to produce due to the potentially large number of codes required for each field.  The <TODO> program can be used to generate all QR codes at once, and a thermal printer can print the codes on pot labels rapidly.  However, the pot labels need a solid base to stay upright and grounded during transplanting. The researchers at the Land Institute in Salina, Kansas, developed a biodegradable compost <TODO word this better> that the pot labels are inserted into.  An example of one of these QR codes can be seen in figure \ref{QR_code}.
 
 \begin{figure}[htb]
 	\centering
     \includegraphics[height=2in]{figures/qr_code_407.png}
     \caption[QR code]{QR code printed on pot label and planted in field.}
-    \label{QR code}
+    \label{QR_code}
 \end{figure}
 
 \section{Platform Design}
-\label{system-platform}
+\label{section:platform_design}
 
-Why use a robot?
-Autonomous
-less manual work 
-constant speed for consistent overlap
-easy to repeat
+There are many types of platforms that could be used for mapping.  Aerial vehicles have the benefit of autonomously traversing the field without the possibility of running over plants. However, they are unable to provide external lighting or shading which is important when post-processing the images. In addition, the size constraint on QR codes would require low altitude flights at a constant altitude to keep the codes properly focused which is not easy to achieve.  Higher altitude flights would be possible with a telescopic lens, but this increases cost, weight and most critically the effects of error in camera orientation.  For these reasons only ground platforms are considered.
 
-\subsection{Base Platform}
+Two different types of ground platforms were investigated, a manual push-cart and a four-wheel robotic vehicle.  The push-cart excels in it's simplicity, however for this thesis only the robotic platform is discussed.  The main benefits of a robot is the ability to drive at a constant speed and the option to operate autonomously.  Driving at a constant speed is important to ensure sufficient overlap between successive images, and self-driving vehicles remove much of the tedious work associated with imaging large fields.  
 
-The base platform selected is the Husky A2000 mobile robot made by Clearpath Robotics.  The Husky is a four wheeled differential drive robot measuring 30 inches long and 25 inches wide.  As seen in figure TODO a custom C-channel structure was added onto the top of the robot to enable it to image the field.  Attached to the front of the top structure are two Canon 7D digital single-lens reflex (DSLR) cameras. On the back are two antennas <TODO what kind> which attach to a Trimble BX982 global navigation satellite system (GNSS) receiver which is mounted to the top of the robot.   
+\subsection{Robotic Platform}
+
+The selected robotic platform is the Husky A2000 mobile robot made by Clearpath Robotics.  The Husky is a four wheeled differential drive robot measuring 30 inches long and 27 inches wide. A custom C-channel structure was added to the top of the robot to enable it to image the field.  This structure can be seen in figure \ref{husky_rocky_ford}.  Attached to the front of the structure are two Canon 7D digital single-lens reflex (DSLR) cameras.  Using two cameras allows two rows to be mapped at the same time. 
+
+TODO include max robot speed and payload.
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=3in]{figures/sunflower_rocky_ford_labeled.jpg}
+    \caption[Husky]{Husky A2000 mobile robot equipped with two cameras.}
+    \label{husky_rocky_ford}
+\end{figure}
+
+On the back of the C-structure are two white, Trimble AG25 antennas which attach to a Trimble BX982 global navigation satellite system (GNSS) receiver.  This receiver is mounted to the top of the robot.   
 
 \subsection{GNSS Receiver}
 
-The BX982 receiver provides centimeter level accuracy when paired with a fixed base receiver broadcasting RTK correction signals.  For this application the fixed base is a Trimble Ag542 receiver with a <> antenna as shown in figure TODO.  The robot receiver and base receiver communicate over a <> MHz radio link.   The dual antenna design allows the robot to determine its heading, or yaw, to within approximately 0.1 degree.  This accurate yaw is important for geo-locating plants and QR codes within images, as well as allowing the robot to operate autonomously as discussed in section <TODO>. 
+The BX982 receiver provides centimeter level accuracy when paired with a fixed base receiver broadcasting RTK correction signals.  For this application the fixed base is a Trimble Ag542 receiver with a Trimble Zypher Geodetic antenna as shown in figure \ref{base_station}.  This base station communicates with the SNB900 rover radio mounted to the robot over a 900 MHz radio link.   The dual antenna design allows the robot to determine its heading, or yaw, to within approximately 0.1 degree.  This accurate yaw is important for geo-locating plants and QR codes within images, as well as allowing the robot to operate autonomously as discussed in section \ref{section:automated_control}. 
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=3in]{figures/sunflower_base_cropped.jpg}
+    \caption[Base station]{Ag542 base station mounted on tripod.}
+    \label{base_station}
+\end{figure}
 
 \subsection{Cameras and Lighting}
 
-The Canon 7D contains a <> megapixel sensor and is fitted with a fixed 20mm focal length wide-angle lens.  The Canon 7D contains an Advanced Photo System type-C (APS-C) sensor rather than a full frame 35mm sensor, which paired with the 20mm lens gives a horizontal angle of view of <> degrees and a vertical view of <> degrees.  
+The Canon 7D features an 18 megapixel (MP) sensor and is fitted with a fixed 20 millimeter focal length wide-angle lens.  The camera contains an Advanced Photo System type-C (APS-C) sensor rather than a full frame 35mm sensor, which paired with the wide-angle lens gives a horizontal angle of view of 58.3 degrees and a vertical view of 40.9 degrees.  
 
-Camera placement
+Camera placement.  Camera roll.  Relative yaw (go long ways)
 
 Talk about LED lights.  
 
-\subsection{Nominal Speed}
+<TODO image of camera and lights> side by side not same figure
 
-Overlap
-For redundancy and improved accuracy
+\subsection{Determining Parameters}
+
+There are many parameters, such as camera height and vehicle speed, which are chosen to ensure quality images and sufficient field coverage.  The most important to determine first is the camera height as that determines the resolution of the image.  If the image is too low of resolution then the QR codes will be unreadable.  If each pixel could correspond to exactly one square on the QR code then the minimum resolution would be 1 pixel per millimeter, since each square is roughly 1 millimeter in size.  In reality this is almost never the case, and the theoretical minimum is 3 pixels for one square.  If only 2 pixels per square are used then the light from the square could be split in half with the adjacent white square and the result would be an unresolved gray square.  However, all lenses also introduce some loss in contrast which is a function of many things such as lens diffraction, aperture and pixel position.  Also in reality the camera's optical axis is not always perfectly orthogonal to the QR code.  To account for these extra effects the actual minimum resolution is set to 5 pixels per millimeter.  
+
+The 18 million effective pixels on the sensor are split into a 5184 by 3456 grid.  The minimum resolution then requires a maximum image size of 1037 by 690 millimeters which constrains the cameras to be no higher than 930 millimeters above the QR codes.  In order to make the imaging process more robust, the cameras are mounted 700 millimeters above the ground which corresponds to an image size of 781 by 520 millimeters, and a resolution of approximately 6.5 pixels per millimeter.  Mounting the cameras lower than the maximum requirement also always the external lighting to be more concentrated and requires smaller shading if the imaging is done during the day.  
+
+Another requirement that is added to make the mapping process more robust is that each QR code must be in a minimum of two images.  This helps solve temporary issues such as bugs flying in front of the camera as well as offers multiple perspectives if the code is accidentally planted at an angle.  In order to ensure this the maximum spacing between successive images is given by the equation
+\begin{align*}
+ \text{max spacing} &= (\text{image width} - \text{QR side length} - \text{pad}) / 2 \\
+             &= (781 - 25 - 75) / 2 \\ 
+             &= 340 \text{ millimeters}
+\end{align*}
+where the pad is extra spacing to account for variations in camera latency and reduced lighting at the image border.
+  
+An additional constraint on the cameras that must be taken into account is the minimum trigger period.  Many cameras, including the Canon 7D, are capable of exposing images very rapidly and then buffering them before they are processed.  However, the minimum trigger period considered in this section is the minimum amount of time for an image to be exposed, processed and saved without continued buffering, as buffering can only be sustained for so long.  This was experimentally determined for the Canon 7D to be 0.7 seconds.  
+
+In order to satisfy the maximum image spacing while not exceeding the minimum trigger period, the robot cannot drive faster than 0.5 meters per second.  One downside of driving this fast is cameras begin to noticeably shake when the field is not smooth which can lead to occasionally blurry images.  Therefore the nominal robot speed is set to 0.4 meters per second.  These platform parameters are summarized in table \ref{table:platform_params}.
+
+
+\begin{table}[htb]
+    \begin{center}
+    \caption{Summary of platform parameters.}
+    \begin{tabular}[c]{|c|c|c|}
+        \hline
+        Parameter & Value & Units \\
+        \hline
+        Camera Height    & 700       & millimeters         \\
+        Image Size       & 781 x 520 & millimeters         \\
+        Image Resolution & 6.5       & pixels / millimeter \\
+        Trigger Period   & 0.7       & seconds / image     \\
+        Robot Speed      & 0.4       & meters / second     \\
+        \hline
+    \end{tabular}
+    \label{table:platform_params}
+   \end{center}
+\end{table}
 
 \subsection{On-board Computers}
 
@@ -97,6 +147,7 @@ These base packages allowed the robot to be manually driven by the logitech cont
 However, when driving through the field it's important to maintain a constant speed to ensure all QR codes and plants are imaged.  With the basic teleop functionality this was difficult to achieve while also keeping the robot centered in the middle of the row. To solve this issue the researcher extended the teleop node to include cruise control functionality that is commonly seen in automobiles.  TODO explain the buttons.  
 
 \subsection{Automated Control}
+\label{section:automated_control}
 
 While this cruise control feature made it feasible to manually drive the robot through the field, for large experiments this was a tedious task that required ten or more hours of keep the robot centered between the rows.  
 
