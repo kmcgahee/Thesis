@@ -57,7 +57,7 @@ TODO include max robot speed and payload.
 
 \begin{figure}[htb]
 	\centering
-    \includegraphics[height=3in]{figures/sunflower_rocky_ford_labeled.jpg}
+    \includegraphics[height=2.7in]{figures/sunflower_rocky_ford_labeled.jpg}
     \caption[Husky]{Husky A2000 mobile robot equipped with two cameras.}
     \label{husky_rocky_ford}
 \end{figure}
@@ -78,12 +78,23 @@ The BX982 receiver provides centimeter level accuracy when paired with a fixed b
 \subsection{Cameras and Lighting}
 
 The Canon 7D features an 18 megapixel (MP) sensor and is fitted with a fixed 20 millimeter focal length wide-angle lens.  The camera contains an Advanced Photo System type-C (APS-C) sensor rather than a full frame 35mm sensor, which paired with the wide-angle lens gives a horizontal angle of view of 58.3 degrees and a vertical view of 40.9 degrees.  
+As shown in figure \ref{husky_rocky_ford} the cameras are mounted far out in front of the robot so that the wheels or front bumper do not show up in the image and reduce the effective field of view.  In addition, each camera is mounted with a 90 degrees yaw with respect to the platform so that the longer side of the image is aligned with the forward movement of the robot as seen in figure \ref{figure:image_fov}. 
 
-Camera placement.  Camera roll.  Relative yaw (go long ways)
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2in]{figures/camera_directions.png}
+    \caption[Camera field of view]{Depiction of camera field of views relative to robotic platform.}
+    \label{figure:image_fov}
+\end{figure}
 
 Talk about LED lights.  
 
-<TODO image of camera and lights> side by side not same figure
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2in]{figures/canon7d_and_LEDs.png}
+    \caption[Canon 7D and LED bars]{Canon 7D and external lighting LED bars.}
+    \label{figure:canon_and_bars}
+\end{figure}
 
 \subsection{Determining Parameters}
 
@@ -124,45 +135,57 @@ In order to satisfy the maximum image spacing while not exceeding the minimum tr
 
 \subsection{On-board Computers}
 
-There are a total of four computers used on the platform.  The first is located within the main compartment of the Husky a custom mini-ITX computer running the Robot Operating System (ROS) which is discussed more in section TODO.  
-Mention wifi/router/laptops.  
+There are a total of four computers used on the Husky.
+
+\begin{description}
+\item[Main Husky Computer] - custom mini-ITX situated inside the main compartment of the robot running Ubuntu 12.04 along with the Robot Operating System (ROS). This computer contains all of the telemetry and guidance logic and is discussed more in section \ref{section:base_functionality}.  
+\item[Husky Microcontroller] - Atmel ARM-based SAM7XC256 enclosed in the back of the robot chassis.  This microcontroller receives linear and angular velocity commands from the main computer and reports feedback from the robot's encoders, battery and motors. 
+\item[Husky Interface Computer] - Lenovo T400 laptop that's also running Ubuntu 12.04 along with ROS.  This computer sits on top of the Husky and is used to send commands to the robot using a secure shell (SSH)
+\item[Data Collection Computer] - Lenevo S431 laptop running Windows 7 that also sits on top of the Husky.  This computer runs the data collection program responsible for saving data from the cameras and GNSS receiver.   
+\end{description}
+
+For simplicity the output of the GNSS receiver is split to both the data collection computer as well as the main Husky computer.  It would be ideal to run the data collection program on the Husky interface computer to eliminate the need for an extra computer.  However, the data collection program requires a Windows based operating system to interact with the Canon cameras, and at the time of this research ROS is not stable on Windows. 
 
 \section{Guidance and Control}
-\label{system-modes}
 
-These packages are found 
+The Husky came with basic driving functionality, however this was not sufficient for the mapping process.  This section describes the additional functionality developed for the robot that enables it to operate in autonomous or semi-autonomous modes.  
 
 \subsection{Base Functionality}
+\label{section:base_functionality}
 
-When the Husky was purchased the main computer came installed with the Robot Operating System (ROS), which is popular open-source framework that provides many of the same services as traditional operating system such as inter-process communication and hardware-abstraction.  One major benefit of ROS is it allows different functionality to be split up into separate processes, referred to as Nodes.  This promotes code re-use and prevents one component from crashing the entire system.   The Nodes that were pre-installed on the Husky are listed below
+When the Husky was purchased the main computer came installed with the Robot Operating System, which is popular open-source framework that provides many of the same services as traditional operating system such as inter-process communication and hardware-abstraction.  One major benefit is ROS allows different functionality to be split up into separate processes, referred to as nodes.  This promotes code re-use and prevents one component from crashing the entire system.   The nodes that were pre-installed on the Husky are the
 
-IMU Node
-Teleop Node
-Husky Node
-
-These base packages allowed the robot to be manually driven by the logitech controller shown in figure TODO.  The buttons did <> and the joystick sent <> commands.  
+\begin{description}
+\item[Teleop node] - receives driving commands from the Logitech controller.  The default functionality is when the X button is held down and the left and right analog sticks command linear and angular velocity, respectively.
+\item[Husky node] - in charge of sending the velocity commands over a serial port to the microcontroller that controls the motors.  
+\item[IMU node] - driver for the UM6 orientation sensor that came installed on the robot.  However, since this node is not used since the platform is stable and the multiple GNSS antennas determine yaw.
+\end{description}
 
 \subsection{Cruise Control}
 
-However, when driving through the field it's important to maintain a constant speed to ensure all QR codes and plants are imaged.  With the basic teleop functionality this was difficult to achieve while also keeping the robot centered in the middle of the row. To solve this issue the researcher extended the teleop node to include cruise control functionality that is commonly seen in automobiles.  TODO explain the buttons.  
+When driving through the field it's important to maintain a constant speed to ensure all QR codes and plants are imaged.  With the basic teleop functionality this was difficult to achieve while also keeping the robot centered in the middle of the row. To solve this issue the researcher extended the teleop node to include cruise control functionality that is commonly seen in automobiles.  
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=3in]{figures/logitech_controller_labelled.png}
+    \caption[Cruise control buttons]{Logitech controller for Husky showing cruise control functionality.}
+    \label{figure:cruise_control}
+\end{figure}
+
+Cruise control can be enabled by either pressing both the Enable 1 and Enable 2 buttons at the same time or by the Preset button.  The Preset button defaults to a certain configuration speed, by default 0.4 meters per second.  If the Override button is pressed then the linear speed is temporarily calculate from the left analog stick, as is the case in basic driving mode.  The Resume button returns to the last speed, if there was one, and the up and down arrows on the D-pad vary the commanded speed in increments of 0.05 meters per second.    
 
 \subsection{Automated Control}
 \label{section:automated_control}
 
-While this cruise control feature made it feasible to manually drive the robot through the field, for large experiments this was a tedious task that required ten or more hours of keep the robot centered between the rows.  
+While this cruise control feature makes it feasible to manually drive the robot through the field, for large experiments this is a tedious task that required ten or more hours of keep the robot centered between the rows.
 
-path planning
-localization
-motion
+ROS contains well-developed navigation functionality that allows the robot to convert odometry and sensor data into velocity commands for the robot.  This navigation, however, is based around advanced functionality such as cost maps, detailed path planning and map-based localization. All of which are unnecessary for this application.  Therefore, the researcher decided to develop a simple guidance solution that is implemented in the following nodes
 
-ROS contains well-developed navigation functionality that allows the robot to convert odometry and sensor data into velocity commands for the robot.  However this navigation is based around advanced functionality such as cost maps, detailed path planning and map-based localization, all of which are unnecessary for this application.  Therefore the researcher decided to implement a simple, custom guidance solution that is implemented in the following nodes
-
-GPS
-Waypoint Upload
-Guidance
-
-Required <waypoints>
-For simplicity no filtering was used . For faster speeds it may be necessary.
+\begin{description}
+\item[GPS node] - combines position and yaw data from the GPS receiver and publishes this data to the rest of the ROS system.
+\item[Waypoint upload node] - allows the Husky interface computer to load a set of waypoints into to robot.
+\item[Guidance node] - computes robot velocity needed to follow a set of waypoints. 
+\end{description}
 
 \section{Data Collection Software}
 \label{system-software}
@@ -183,16 +206,31 @@ DySense also uses GPS and IMU drivers to record the platform's position and orie
 \section{Additional Markers}
 \label{system-markers}
 
-In addition to the group QR codes there are two other types of markers used in the mapping process.  The first is a row end marker which is also represented as a QR code.  These row codes store the row number and signify whether the code is the start or the end of each row.  It's important to know the planting direction of each row because that defines which plants are associated with each group QR code.   
+In addition to the group QR codes there are two other types of markers used in the mapping process, row end markers and plant markers.   
 
-\subsection{Row Codes}
+\subsection{Row Markers}
 
-row code size.
+Row markers are placed at the beginning and end of each row. Similar to identifying plant groups, these markers are also implemented using QR codes.  These row codes store the row number and signify whether the code is the start ("St") or the end ("En") of each row. As discussed in section \ref{section:plantid}, it's critical to know the planting direction of each row because that defines which plants are associated with each group QR code.
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2in]{figures/row_codes.png}
+    \caption[Row QR codes]{QR codes marking the start and end of row 21.}
+    \label{figure:row_codes}
+\end{figure}
 
 \subsection{Plant Markers}
 
-The second type of marker is used to mark plants to help distinguish them from other plant debris that may be found in the field after TODO.  The marker used in this experiment was a blue dyed wooden stick approximately 5 inches in length that was placed in the center of each plant. The color blue was selected because it provides the largest difference between other hues likely found in the field, such as yellow/green in plants and red in soil.  In addition to marking the plants, this stick also helped prevent the plants from flipping over when exiting the planter.
+The second type of marker is used to help distinguish regular plants from other plant debris that may be found in the field after tilling <TODO>.  This marker is optional, but helps improve the robustness of locating plants.  Depending on the size and quality the field these markers can be used on every plant, or for example every 4 plants. 
 
-TODO why wooden?
+The marker used in this experiment is a blue dyed wooden stick approximately 5 inches in length that is placed in the center of each plant. The color blue is selected because it provides the largest difference between other hues likely found in the field, such as yellow/green in plants and red in soil.  In addition to marking the plants, this stick also helps prevent the plants from flipping over when exiting the planter.
 
-TODO include figure of blue stick and row code
+Another type of plant marker worth mentioning is a colored tag pierced through the top of an un-dyed wooden stick.  This type of marker can provide addition information for manual plant inspection and is also much more saturated than the dyed sticks, making it easier to detect.  The reason this marker is not used in this experiment is it was not investigated until after the conclusion of this experiment.
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[height=2.5in]{figures/plant_markers.png}
+    \caption[Plant markers]{Examples of blue stick (left) and colored tag (right)}
+    \label{figure:plant_markers}
+\end{figure}
+
