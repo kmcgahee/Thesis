@@ -4,33 +4,19 @@
 \chapter{Introduction}
 \label{introduction}
 
-Recent research shows that crop production must increase in order to meet the demand created by a quickly growing world population.  This increase in production is supported by new automated technologies that allow both researchers and farmers to operate more efficiently.  One such technology is the means to automated means to develop a field map.  
+Recent research shows the growth rate of crop production must increase in order to meet the demand created by a quickly growing world population (todo ref source).  This increase in production is supported by new, automated technologies that allow both researchers and farmers to operate more efficiently.  One such technology, which is investigated in this research, is the means to automatically develop a map of plant locations within a field.  This field map enables other useful technologies, such as precise weed spraying or easily referencing plants in a database. 
+ 
+An important point to consider with field mapping is there are two distinctly different starting points.  In some applications seeds are directly planted in the field, while in other applications plants are grown, typically in a greenhouse, and then planted into the field.  The latter process is known as transplanting, and the plants are referred to as transplants.  In addition, certain applications require similar plants to be identified as part of a larger plant group.  These similarities could be based on crop type or genetic variations. 
 
-Distinguish between plots/plants and seeds vs. transplants.     
+The task of mapping transplants is traditionally performed by manually walking through the field and surveying the location of each plant. However, this is a tedious process that does not scale well to large fields containing tens of thousands of plants.  Several automated mapping processes, such as (ref) and (ref), have been explored, but each of these methods have key drawbacks which are discussed in section \ref{section:similar_research}.  The research presented in this thesis aims to address these shortcomings by developing a novel mapping process based on computer vision techniques.  This image-based mapping process, especially when paired with an automated robotic platform, is an effective solution for locating and identifying transplants. 
 
-Increase in scale facilitates the need for automated solutions to solve problems that were traditionally done manually.  One of these challenges is creating a field map.
-
-  along with limited field resources, requires both researchers and farmers to become more efficient.  Researchers benefit from being able to scale up the size of 
-
-This technology requires an accurate map of the field. 
-
-How that can benifit from mapping.  
-
-created new challenges 
-   which in turn have increased the need of new technologies for facilitating this growth.
-
-General statement about agriculture and the need to go large scale.  Developments in farm related technology have increased the importance of locating individual plants in the field.  Variations among applications and crops require   Planting seeds vs plants.  They need different solutions.  Turnkey solutions have been developed for   In addition some applications require assigning plants to a specific group, for example to differentiate between genetic varieties.   
-
-% Traditional mapping. 
-%1.2.3.	Why it needs to be somewhat automated
-
-This thesis describes a novel mapping process based on computer vision techniques and shows its effectiveness in locating and identifying transplants.
+----------------------
+use for abstract
+ Developments in farm related technology have increased the importance of locating individual plants in the field.
 
 \section{Mapping and Identification}
 
-The mapping process, which refers to creating a field map, is split into two smaller processes.  The first is determining the location of each plant within the field and the second is determining which group an individual plant belongs to. These are described in more detail below. 
-
-The first goal of field mapping is to determine the coordinates of each plant in the field with respect to one or more reference frames.  Depending on the application these could be a local field reference frame or a global frame such as lat/long/alt <TODO>.  Since the plants are fixed to the earth this is a two-dimensional mapping problem and third dimension, such as altitude is not required.  In addition to assigning coordinates it's also useful to determine the row number that each plant is found in.  This first sub-process is referred to as plant mapping. 
+The mapping process, which refers to creating a field map, is split into two smaller processes.  The first of these is to determine the coordinates of each plant in the field with respect to one or more reference frames.  Depending on the application these could be a local field reference frame or a global frame, such as one specified by latitude and longitude.  Since the plants are fixed to the earth this is a two-dimensional mapping problem and third dimension, such as altitude is not required.  In addition to assigning coordinates it's also useful to determine the row number that each plant is found in.  This first sub-process is referred to as plant mapping. 
 
 Since plants in the field may not all be identical, for example they may have variations in their genetics, then this requires the mapping process be able to assign a unique group label to each plant.  These plant groups, or plant families, are known prior to planting and the challenge is determine where each plant group ends up in the field.  This process of assigning a plant to a group of plants is referred to as plant identification (ID).
 
@@ -38,7 +24,7 @@ Since plants in the field may not all be identical, for example they may have va
 
 There are many applications where a field map is useful.  One application is for perennial agriculture where plants die and then re-grow each year.  Having a field map with accurate coordinates allow the same plants to be tracked over multiple years.
 
-An extension of this application, which applies to both perennial and annual agriculture, is automatic plant lookup within a database.  For example if a researcher needed to record notes or measurements of a plant within an un-mapped field they would likely need to manually enter in a plant number to retrieve that plant's entry within the database.  However if they were equipped with a Global Navigtation Sattelite System (GNSS) receiver they would be able to automatically retrieve the plants entry based on where the researcher was standing in the field, assuming the database supports this functionality. 
+An extension of this application, which applies to both perennial and annual agriculture, is automatic plant lookup within a database.  For example if a researcher needed to record notes or measurements of a plant within an un-mapped field they would likely need to manually enter in a plant number to retrieve that plant's entry within the database.  However if they were equipped with a Global Navigation Satellite System (GNSS) receiver they would be able to automatically retrieve the plants entry based on where the researcher was standing in the field, assuming the database supports this functionality. 
 
 An important  
 1.3.4.	Other benefits of mapping - precise weeding - give more examples.  Not all of the field is transplanted. 
