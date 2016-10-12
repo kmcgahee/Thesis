@@ -4,32 +4,38 @@
 \chapter{Post-Processing Pipeline}
 \label{processing}
 
-Once the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a pipeline fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the pipeline followed by a detailed explanation of each script.
+Once the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a sequential, or pipeline, fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the pipeline followed by a detailed explanation of each step.
 
 \section{Pipeline Overview}
 \label{processing-overview}
 
-In this pipeline each script is referred to as a stage, where each stage accomplished one specified task.  The main reason the post-processing is split into separate stages is several stages take a significant amount of time to run, so it's beneficial to not re-run the entire pipeline when changes are made. Each stage is summarized in the following list:
+In this pipeline each script is referred to as a stage, where each stage accomplishes one specific task.  The main reason the post-processing is split into separate stages is several stages take a significant amount of time to run, so it's beneficial to not re-run the entire pipeline when changes are made to one stage.  That task that each stage accomplishes is:
 
 \begin{description}
-\item[Stage 0] Calculate the position and orientation (pose) of each image.
-\item[Stage 1] Find and read QR codes in each images.
+\item[Stage 0] Calculate the position and orientation of each image.
+\item[Stage 1] Find and read QR codes in all images.
 \item[Stage 2] Create the structure of the field using the QR codes.
-\item[Stage 3] Detect leaves and plant markers in each images.
+\item[Stage 3] Detect leaves and plant markers in each image.
 \item[Stage 4] Cluster plant parts from stage 3 into possible plants, and filter out unlikely plants.
-\item[Stage 5] Assign individual numbers to plants and save final field map to a comma separated value (CSV) file. 
+\item[Stage 5] Assign individual numbers to plants and save final field map to a file. 
 \end{description}
 
-The two stages that take the most time are 1 and 3 as they both deal with opening each image and searching through it.  Even though these stages are similar, they are kept separate because having access to the field structure can significantly speed up the clustering step in \ref{processing-stage4} 
+The two stages that take the most time to run are 1 and 3 as they both deal with opening each image and searching through it.  Even though it would speed up the pipeline to combine them, they are kept as separate stages for simplicity.
  
-Conceptually the output of each intermediate stage consists of objects which directly relate to the field, for example QR codes, plants or rows.  In reality the output is a single file containing the serialized representation of each object.  This makes it trivial to pass these objects from one script to another.
+The output of each intermediate stage consists of objects which directly relate to the field, for example QR codes, plants, or rows.  These objects are serialized into a single output file, which makes it trivial to pass these objects from one script to another.
 
-The location of the code is listed in Appendix A.  TODO include ref.
+The location of the post-processing code is listed in Appendix \ref{appendix:code_repositories}.
 
 \section{Stage 0 - Calculating Camera Pose}
 \label{processing-stage0}
 
-% Write this section last
+This first stage is calculated by the camera. Altitude could be used for an elevation map. 
+
+filters out image with large roll and pitch angles.
+
+Then this stage converts to UTM coordinates,   and calculates the homography matrix discussed in section \ref{todo}.
+
+Runs before stage 1. 
 
 \section{Stage 1 - Extracting QR Codes}
 \label{processing-stage1}
@@ -114,7 +120,7 @@ After the clustering is completed for an entire plant segment, the list of possi
 \item[Step 3] Find the most likely plant based on various characteristics which is described in more detail below.  If there aren't any possible plants then create one in the next location based off the expected transplanter spacing.  
 \item[Step 4] Repeat the previous step, but starting at the end of the segment and find the next most likely plant by working backwards.
 \item[Step 5] Split the original segment into smaller segments using the most likely plants as new points.  If the new segments are too short to contain plants then the algorithm is finished, otherwise recursively go back to step 1 for each of the new segments.
-\end{description}}
+\end{description}
 
 TODO include figure of algorithm
 
@@ -137,6 +143,8 @@ The idea behind working from the both directions at the same time is the start a
 
 \section{Stage 5 - Saving Field Map}
 \label{processing-stage5}
+
+comma separated value (CSV)
 
 The final stage in the pipeline is generating the final field map.  This process first begins by assigning every plant in the field a unique number so it can be easily referenced by another program using the plant's coordinates.  This numbering begins with plant 1 at the start of the first row and then follows a serpentine pattern which can be seen in figure TODO.  This numbering system is chosen because it represents how researcher's are most likely inspect plants when walking through the field.  
 

@@ -82,11 +82,17 @@
 \usepackage[titles]{tocloft} % Adds leader dots to all entries in the table of contents
 %\usepackage{parskip} 
 
+% Already included below
+%\usepackage{hyperref} % to include hyperlinks in appendix
+
 % For matlab code
 \usepackage{listings}
 \usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
-\definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+\definecolor{mygreen}{RGB}{53,95,58} % color values Red, Green, Blue
 \definecolor{mylilas}{RGB}{170,55,241}
+
+% To manage acronyms
+\usepackage{acronym}
 
 % Blank line between paragraphs while keeping indents
 %\edef\restoreparindent{\parindent=\the\parindent\relax}
@@ -262,6 +268,14 @@
 \listoftables
 
 % +--------------------------------------------------------------------+
+% | Accronyms Page
+% +--------------------------------------------------------------------+
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Acronyms}
+\input{acronyms.tex}
+
+% +--------------------------------------------------------------------+
 % | Acknowledgements Page
 % |
 % | If you choose not to have an Acknowledgements page, comment out
@@ -320,7 +334,7 @@
 \input{my_chapters/1_introduction.tex}
 \input{my_chapters/2_background.tex}
 \input{my_chapters/3_system_design.tex}
-%\input{my_chapters/4_post_processing.tex}
+\input{my_chapters/4_post_processing.tex}
 %\input{my_chapters/5_experimental_setup.tex}
 %\input{my_chapters/6_results_and_analysis.tex}
 %\input{my_chapters/7_conclusion.tex}
