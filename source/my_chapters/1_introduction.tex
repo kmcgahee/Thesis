@@ -10,10 +10,6 @@ An important point to consider with field mapping is there are two distinctly di
 
 The task of mapping transplants is traditionally performed by manually walking through the field and surveying the location of each plant. However, this is a tedious process that does not scale well to large fields containing tens of thousands of plants.  Several automated mapping processes, such as (ref) and (ref), have been explored, but each of these methods have key drawbacks which are discussed in section \ref{section:similar_research}.  The research presented in this thesis aims to address these shortcomings by developing a novel mapping process based on computer vision techniques.  This image-based mapping process, especially when paired with an automated robotic platform, is an effective solution for locating and identifying transplants. 
 
-----------------------
-use for abstract
- Developments in farm related technology have increased the importance of locating individual plants in the field.
-
 \section{Mapping and Identification}
 
 The mapping process, which refers to creating a field map, is split into two smaller processes.  The first of these is to determine the coordinates of each plant in the field with respect to one or more reference frames.  Depending on the application these could be a local field reference frame or a global frame, such as one specified by latitude and longitude.  Since the plants are fixed to the earth this is a two-dimensional mapping problem and third dimension, such as altitude is not required.  In addition to assigning coordinates it's also useful to determine the row number that each plant is found in.  This first sub-process is referred to as plant mapping. 
