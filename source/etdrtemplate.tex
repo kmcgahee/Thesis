@@ -234,7 +234,7 @@
 % | first page on which page numbers are displayed.
 % +--------------------------------------------------------------------+
 
-\setcounter{page}{6}
+\setcounter{page}{4}
 
 % +--------------------------------------------------------------------+
 % | The following command creates a bookmark for the table of contents
@@ -268,9 +268,10 @@
 \listoftables
 
 % +--------------------------------------------------------------------+
-% | Accronyms Page
+% | Acronyms Page
 % +--------------------------------------------------------------------+
 
+\newpage
 \phantomsection
 \addcontentsline{toc}{chapter}{Acronyms}
 \input{acronyms.tex}
@@ -282,6 +283,7 @@
 % | or delete the following 3 lines.
 % +--------------------------------------------------------------------+
 
+\newpage
 \phantomsection
 \addcontentsline{toc}{chapter}{Acknowledgements}
 \input{acknowledge.tex}
@@ -293,6 +295,7 @@
 % | or delete the following 3 lines.
 % +--------------------------------------------------------------------+
 
+%\newpage
 %\phantomsection
 %\addcontentsline{toc}{chapter}{Dedication}
 %\input{dedication.tex}
