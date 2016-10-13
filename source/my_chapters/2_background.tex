@@ -31,6 +31,7 @@ A common frame that is fixed to the Earth is a spherical coordinate frame, with 
 \end{figure}
 
 \subsection{Universal Transverse Mercator (UTM)}
+\label{section:utm}
 
 In order to describe the points on the Earth's surface in a two-dimension plane, as is desired for mapping, a projection model must be used on the angular latitude and longitude coordinates.  The projection model used in this research is known as the Universal Transverse Mercator (UTM) which splits the Earth into 60 lateral bands, examples of which are shown in figure \ref{utm_zones}.  In each zone an item is described by its easting, northing and altitude coordinates.  However, due to how the platform coordinate system is defined it's beneficial to have the Z axis in the downward direction.  This requires the easting and northing be switched to maintain a right-handed coordinate system. Therefore, UTM coordinates are described by $(N,E,D)$.  Another important modification is that the Z, or down, component is measured relative to the ground, not the WGS-84 ellipsoid. 
 
@@ -201,6 +202,7 @@ The camera coordinate system describes the locations of objects in the world rel
  While this method is easy to visualize, it requires multiple steps for each pixel that must be converted to world coordinates.  A more efficient method is presented in the next section.
 
  \subsubsection{Projective Space}
+ \label{section:projection_space}
  
  An ideal solution would be to describe the backwards projection from the pixel plane to the world plane as a single matrix that can be applied in one step.  In order to do this, coordinates in each frame must be converted into the Projective space which adds an extra coordinate.  This coordinate represents scale, and a set of coordinates in this space is referred to as homogeneous coordinates.
 
@@ -295,9 +297,10 @@ The camera coordinate system describes the locations of objects in the world rel
  
   Even though an entire column of the rotation matrix is discarded no information is lost as this column can be described as the cross product of the first and second columns.  This inverted matrix is denoted $\xi^{-1}$, so that the entire projection can be represented as a single homography matrix
   
- \[ 
+ \begin{equation}
  H = \xi^{-1} C^{-1} K^{-1} 
- \].
+ \label{equation:homography}
+ \end{equation}
  
  Once $(N',E',S')$ is computed the actual northing and easting is simply the inhomogeneous coordinates
  

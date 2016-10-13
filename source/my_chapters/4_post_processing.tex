@@ -22,49 +22,78 @@ In this pipeline each script is referred to as a stage, where each stage accompl
 
 The two stages that take the most time to run are 1 and 3 as they both deal with opening each image and searching through it.  Even though it would speed up the pipeline to combine them, they are kept as separate stages for simplicity.
  
-The output of each intermediate stage consists of objects which directly relate to the field, for example QR codes, plants, or rows.  These objects are serialized into a single output file, which makes it trivial to pass these objects from one script to another.
+The output of each intermediate stage consists of objects which directly relate to the field, for example QR codes, plants, or rows.  These objects are serialized into a single output file, which makes it trivial to pass these objects from one script to another. 
 
-The location of the post-processing code is listed in Appendix \ref{appendix:code_repositories}.
+Every stage of the pipeline is written in the Python programming language, and all of the image-processing algorithms are performed using the Open Source Computer Vision library, also known as OpenCV.  The location of the post-processing code is listed in Appendix \ref{appendix:code_repositories}.
 
-\section{Stage 0 - Calculating Camera Pose}
+\section{Stage 0 - Calculating Camera State}
 \label{processing-stage0}
 
-This first stage is calculated by the camera. Altitude could be used for an elevation map. 
+The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken, referred to as the camera's state.  This is performed by the data collection program, since it is a general process that's useful for many other types of sensors in addition to cameras.  
 
-filters out image with large roll and pitch angles.
+However, the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in \ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
 
-Then this stage converts to UTM coordinates,   and calculates the homography matrix discussed in section \ref{todo}.
-
-Runs before stage 1. 
+Even though the modified \ac{utm} coordinates use the ground reference for the z-component, the height above the ellipsoid is also tracked for each image and item mapped in the field.  This information could be used to estimate relative differences in water content in different parts of the field due to changes in elevation. 
 
 \section{Stage 1 - Extracting QR Codes}
 \label{processing-stage1}
 
-The first goal after calculating the position and orientation of each image is to find and read all QR codes in the image set.  This process involves four steps which are applied to every image.
+The first goal after calculating the position and orientation of each image is to detect and read all QR codes in the image set.  This process consists of four steps which are applied to every image.
 
-The first step is converting the image from the default Blue Green Red (BGR) color space to the Hue Saturation Value (HSV) color space.  As can be seen in figure TODO, this is a cylindrical coordinate system which separates image intensity from the color information which makes it more robust to changes in lighting. This color space is also more aligned to how humans think about color TODO insert reference.
+\subsection{Converting Color-Spaces}
 
-TODO insert figure of HSV color space
+The first step is to convert the image from the default OpenCV color-space, which is \ac{bgr}, to the \ac{hsv} color space.  As can be seen in figure \ref{figure:color_spaces}, this is a cylindrical coordinate system which separates image intensity from the color information which makes it more robust to changes in lighting. This \ac{hsv} color space is also more aligned to how humans think about color TODO insert reference.
 
-The second step is to separate the white QR codes from the rest of the image.  This is accomplished by applying a range threshold for each of the HSV components as described below
+\begin{figure}[htb]
+	\centering
+    \includegraphics[width=5.5in]{figures/bgr_and_hsv.png}
+    \caption[Color spaces]{Visualization of \ac{(bgr)} (left) and \ac{hsv} (right) color spaces.}
+    \label{figure:color_spaces}
+\end{figure} 
 
-dst(I)=lowerb(I)0≤src(I)0≤upperb(I)0∧lowerb(I)1≤src(I)1≤upperb(I)1 
+An important consideration is that most digital cameras perform a gamma-encoding when processing data from the imaging sensor.  This is a non-linear operation which maximizes the amount of intensity information that can be stored for each pixel, as it pertains to human-perception.  However, human perception is not a valid concern in this post-processing, and these non-linearities should be removed.  This was not realized until after the research was completed, and thus it is not implemented in the pipeline.
 
-This results in a binary image where pixels that are mostly white are 1 (all white) and everything else is 0 (all black).
+\subsection{Thresholding}
+\label{section:qr_thresholding}
 
-The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a bounding box, which is the smallest rotated rectangle that encompasses all of the object's contours.  These bounding box's are filtered to remove one's that are either too small or too large to be QR codes. 
+The second step is to separate the white QR code from the rest of the image.  This is accomplished by applying a range threshold for each of the HSV components.  This threshold will output a 1 (white pixel) if the all 3 components are in the specified range, otherwise it will output a 0 (black pixel).  In OpenCV hue is defined in the range of 0 to 179, and both saturation and value have a range of 0 to 255.  The range that was experimentally determined for separating QR codes is shown in table \ref{table:qr_hsv_ranges}.
 
-The final step is to use these bounding box's to extract parts of the original to run through QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  
+\begin{table}[htb]
+    \begin{center}
+    \caption{HSV range for detecting QR codes.}
+    \begin{tabular}[c]{|c|c|c|c|}
+        \hline
+        Component & Min Value & Max Value & Notes \\
+        \hline
+        Hue        & 0   & 179 & Include all colors      \\
+        Saturation & 0   & 65  & Avoid saturated colors  \\
+        Value      & 160 & 255 & Avoid dark colors       \\
+        \hline
+    \end{tabular}
+    \label{table:qr_hsv_ranges}
+   \end{center}
+\end{table}
 
-TODO could talk about adaptive thresholding.  
+This threshold results in a binary image where pixels that are mostly white, such as QR codes, are all white, and everything else is all black.  An example of a thresholded image can be seen in figure (TODO ref)
 
-The data returned by the ZBar library is used to determine if the code corresponds to a plant group or to the start/end of a row.  If no data, or bad data, is returned by the ZBar library the extracted image is saved for the operator to review after the stage has completed. 
+\subsection{Filtering by Bounding Boxes}
 
-TODO
+The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a minimum bounding box, which is the smallest rotated rectangle that encompasses the entire object.  These bounding boxes are filtered to remove ones that are either too small or too large to be QR codes.  For the codes constructed from pot labels 
 
-%4.1.2.4.	Calculating coordinates
-%4.1.2.5.	Include figure showing coordinate transformation
-% Handling codes found in multiple images.
+TODO include image showing original and thresholded with rotated bounding box. 
+
+\subsection{Reading QR Codes}
+
+The final step is to use these bounding boxes to extract parts of the original to run through the QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  However, the ZBar program requires a grayscale or binary image, and thus a threshold must be applied to the small, extracted color image.  The range threshold discussed in section \ref{section:qr_thresholding} is effective for finding possible QR codes, but does not do a good job maintaining the grid of white and black squares that make up the QR code.  Instead the \ac{bgr} image is converted to grayscale and if a simple global threshold does not result in a successful code read, then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in figure TODO. 
+
+\begin{figure}[htb]
+	\centering
+    \includegraphics[width=5.5in]{figures/adaptive_threshold.png}
+    \caption[Adaptive threshold]{Comparison showing how an adaptive, rather than a global, threshold can make a code readable by keeping the bottom right corner intact.}
+    \label{figure:adaptive_threshold}
+\end{figure} 
+
+The data returned by the ZBar library is used to determine if the code corresponds to a plant group or to the start/end of a row.  If no data, or bad data, is returned by the ZBar library the extracted image is saved for the operator to review after the stage has completed.  This makes it much easier to find misread or damaged codes and to manually add them into the final results.  If the code is read successfully, then its world coordinates are calculated and saved in a list of QR codes.   If the same code is detected in multiple images, then the world coordinates of each reference are averaged to improve the mapping accuracy.
 
 \section{Stage 2 - Creating Field Structure}
 \label{processing-stage2}
