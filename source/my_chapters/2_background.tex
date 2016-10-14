@@ -43,6 +43,7 @@ In order to describe the points on the Earth's surface in a two-dimension plane,
 \end{figure}
 
 \subsection{Field Coordinate System}
+\label{section:field_coordinates}
 
 One issue with the easting and northing described by UTM is that rows in a fields are not always planted north and south or east and west.  Many of the post-processing steps benefit from removing this relative field orientation. A new field coordinate system is defined where the y-axis runs parallel to the rows and increases in the planting direction of the first row, and the x-axis increases in the direction of increasing row numbers.  The origin is selected so that all items in the field have positive x and y coordinates.   Similar to UTM the units of this frame are meters.  Coordinates in this frame are denoted $(x_f,y_f,z_f)$.
 
