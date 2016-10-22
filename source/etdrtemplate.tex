@@ -99,6 +99,14 @@
 %\usepackage{parskip}
 %\restoreparindent
 
+% To have table and figures on same row
+\usepackage{floatrow}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
+\usepackage[font=small,labelfont=bf,tableposition=top]{caption}
+\DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
+
 % +--------------------------------------------------------------------+
 % |
 % | Citation and Bibliography Style
@@ -338,9 +346,9 @@
 \input{my_chapters/2_background.tex}
 \input{my_chapters/3_system_design.tex}
 \input{my_chapters/4_post_processing.tex}
-%\input{my_chapters/5_experimental_setup.tex}
-%\input{my_chapters/6_results_and_analysis.tex}
-%\input{my_chapters/7_conclusion.tex}
+\input{my_chapters/5_experimental_setup.tex}
+\input{my_chapters/6_results_and_analysis.tex}
+\input{my_chapters/7_conclusion.tex}
 
 % +--------------------------------------------------------------------+
 % | References

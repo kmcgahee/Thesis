@@ -2,7 +2,7 @@
 \cleardoublepage
 
 \chapter{Post-Processing Pipeline}
-\label{processing}
+\label{chapter:pipeline}
 
 Once the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a sequential, or pipeline, fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the pipeline followed by a detailed explanation of each step.
 
@@ -60,7 +60,7 @@ The second step is to separate the white QR code from the rest of the image.  Th
 
 \begin{table}[htb]
     \begin{center}
-    \caption{HSV range for detecting QR codes.}
+    \caption[QR Code Detection Values]{HSV range for detecting QR codes.}
     \begin{tabular}[c]{|c|c|c|c|}
         \hline
         Component & Min Value & Max Value & Notes \\
@@ -83,6 +83,7 @@ The third step is finding the set of external contours, or outermost edges, of e
 TODO include image showing original and thresholded with rotated bounding box. 
 
 \subsection{Reading QR Codes}
+\label{section:reading_codes}
 
 The final step is to use these bounding boxes to extract parts of the original to run through the QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  However, the ZBar program requires a grayscale or binary image, and thus a threshold must be applied to the small, extracted color image.  The range threshold discussed in section \ref{section:qr_thresholding} is effective for finding possible QR codes, but does not do a good job maintaining the grid of white and black squares that make up the QR code.  Instead the \ac{bgr} image is converted to grayscale and if a simple global threshold does not result in a successful code read, then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in figure TODO. 
 
@@ -133,7 +134,7 @@ Similar to the process of extracting QR codes, this stage converts each image to
 
 \begin{table}[htb]
     \begin{center}
-    \caption{HSV range for detecting plant leaves.}
+    \caption[Plant Leaf Detection Values]{HSV range for detecting plant leaves.}
     \begin{tabular}[c]{|c|c|c|c|}
         \hline
         Component & Min Value & Max Value & Notes \\
@@ -151,7 +152,7 @@ In addition to plant leaves, this stage also searches for plant markers.  The va
 
 \begin{table}[hb]
     \begin{center}
-    \caption{HSV range for detecting blue stick markers.}
+    \caption[Blue Stick Detection Values]{HSV range for detecting blue stick markers.}
     \begin{tabular}[c]{|c|c|c|c|}
         \hline
         Component & Min Value & Max Value & Notes \\
@@ -167,7 +168,7 @@ In addition to plant leaves, this stage also searches for plant markers.  The va
 
 \begin{table}[hb]
     \begin{center}
-    \caption{HSV range for detecting yellow tags.}
+    \caption[Yellow Tags Detection Values]{HSV range for detecting yellow tags.}
     \begin{tabular}[c]{|c|c|c|c|}
         \hline
         Component & Min Value & Max Value & Notes \\
@@ -256,6 +257,8 @@ Similar to the sweeping projection algorithm used to assign row numbers, this al
 \label{processing-stage5}
 
 The final stage in the pipeline is generating a field map file.  This process first begins by assigning every plant in the field a unique number so it can be easily referenced in a database.  This numbering begins with plant 1 at the start of the first row, and then follows a serpentine pattern which can be seen in figure \ref{figure:serpentine}. This numbering system is chosen because it represents how a person is likely to inspect plants when walking through the field.  This numbering is done twice, once including QR codes and one just numbering plants.  After the numbering is complete, all the codes and plants are written to a \ac{csv} file, which can be imported into a database.
+
+TODO discuss translating
 
 \begin{figure}[hb]
 	\centering
