@@ -29,7 +29,7 @@ For this research project, Quick Response (QR) codes were selected as the barcod
 
 \subsection{Size Constraint}
 
-For fields with thousands of different plant groups it's not feasible to place these QR codes by hand.  Therefore, they must fit through the deposit cylinders of the transplanter shown in figure <TODO ref experiment>.  In order to not get caught in the cylinders the codes cannot be larger than 2.5 centimeters in diameter. Since there needs to be a white margin around the actual QR code, the code itself ends up being roughly 2 centimeters.  The QR code format is split into different versions which define how many squares make up the code.  The first version is a grid of 21 by 21 squares and is shown in figure \ref{barcode_formats}.  This results in a maximum square size of only 1 millimeter.  
+For fields with thousands of different plant groups it's not feasible to place these QR codes by hand.  Therefore, they must fit through the deposit cylinders of the transplanter shown in figure \ref{figure:transplanter}.  In order to not get caught in the cylinders the codes cannot be larger than 2.5 centimeters in diameter. Since there needs to be a white margin around the actual QR code, the code itself ends up being roughly 2 centimeters.  The QR code format is split into different versions which define how many squares make up the code.  The first version is a grid of 21 by 21 squares and is shown in figure \ref{barcode_formats}.  This results in a maximum square size of only 1 millimeter.  
 
 \subsection{Code Construction}
 
@@ -56,7 +56,7 @@ The selected robotic platform is the Husky A2000 mobile robot made by Clearpath 
 \begin{figure}[htb]
 	\centering
     \includegraphics[height=2.7in]{figures/sunflower_rocky_ford_labeled.jpg}
-    \caption[Husky]{Husky A2000 mobile robot equipped with two cameras.}
+    \caption[Husky]{Husky mobile robot equipped with two cameras.}
     \label{husky_rocky_ford}
 \end{figure}
 
@@ -69,7 +69,7 @@ The BX982 receiver provides centimeter level accuracy when paired with a fixed b
 \begin{figure}[htb]
 	\centering
     \includegraphics[height=3in]{figures/sunflower_base_cropped.jpg}
-    \caption[Base station]{Ag542 base station mounted on tripod.}
+    \caption[Base station with tripod]{Ag542 base station mounted on tripod.}
     \label{base_station}
 \end{figure}
 
@@ -95,6 +95,7 @@ An item that is not pictured on the robot, but is shown in figure \ref{figure:ca
 \end{figure}
 
 \subsection{Determining Parameters}
+\label{section:determining_parameters}
 
 There are many parameters, such as camera height and vehicle speed, which are chosen to ensure quality images and sufficient field coverage.  The most important to determine first is the camera height, as that determines the resolution of the image.  If the image resolution is too low then the QR codes will be unreadable.  
 If each pixel could correspond to exactly one square on the QR code then the minimum resolution would be 1 pixel per millimeter, since each square is roughly 1 millimeter in size.  In reality this is almost never the case, and the theoretical minimum is 3 pixels for one square.  If only 2 pixels per square are used then the light from the square could be split in half with the adjacent white square and the result would be an unresolved gray square.  However, all lenses also introduce some loss in contrast.  The amount of contrast lost is a function of many things such as lens diffraction, aperture and pixel position.  Also in reality the camera's optical axis is not always perfectly orthogonal to the QR code.  To account for these extra effects the actual minimum resolution is set to 5 pixels per millimeter.  
@@ -220,7 +221,7 @@ Row markers are placed at the beginning and end of each row. Similar to identify
 \subsection{Plant Markers}
 \label{section:plant_markers}
 
-The second type of marker is used to help distinguish regular plants from other plant debris that may be found in the field after tilling <TODO is this the right word?>.  This marker is optional, but helps improve the robustness of locating plants.  Depending on the size and quality the field these markers can be used on every plant or, for example, every 4 plants. 
+The second type of marker is used to help distinguish regular plants from other plant debris that may be found in the field after tilling.  This marker is optional, but helps improve the robustness of locating plants.  Depending on the size and quality the field these markers can be used on every plant or, for example, every 4 plants. 
 
 The marker used in this experiment is a blue dyed wooden stick approximately 5 inches in length, which is placed in the center of each plant. The color blue is selected because it provides the largest difference between other hues likely found in the field, such as yellow/green in plants and red in soil.  In addition to marking the plants, this stick also helps prevent the plants from flipping over when exiting the planter.
 

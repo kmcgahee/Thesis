@@ -4,17 +4,52 @@
 \chapter{Background}
 \label{background}
 
-%address at transplanter?  One-time shot if things mess up.  Difficult to identify plants.  Constant stopping, too much motion and difficult shading make its not ideal for images. 
-
-% Not all of the field is transplanted. 
+This chapter begins with a brief summary of existing research that also deals with automated plant mapping.  The main differences between these solutions and the proposed mapping process are highlighted.  Next, the various coordinate systems used in the mapping process are defined, as well as the background theory on converting between camera pixels and world coordinates.  This conversion and it's underlying assumptions are at the core of the image-based mapping process. 
 
 \section{Similar Research}
 \label{section:similar_research}
 
-%2.4.1.	Beam Splitting 
+There are two different approaches to precision plant mapping.  One is to create the map during the planting process, that is as the plants or seeds are being deposited into the ground.  The other is to create the map after the planting is finished.  This section presents an existing solution to each type of approach that involve transplants rather than seeds.
+
+\subsection{Planter Based Solution}
+
+The research done by TODO ~\citep{CT:Weiner:1999} evaluated two different methods for mapping tomato transplants during the planting process.  The first was the use of an encoder wheel on the planting wheel to sense when a plant should be ejected from the planter. The encoder had an angular resolution of 0.1 degrees, which corresponded to a ground resolution of 0.45 millimeters.  There was some displacement between when the plant was released and where it actually ended up in the field due to the forward velocity of the vehicle.  This displacement was experimentally calculated on a small set of plants and accounted for during the mapping.  
+
+The second method was to use an infrared optical beam-splitter to detect when a the stem of the plant passes through the beam.  As shown in figure <TODO>, the beam-splitter was placed roughly 1 meter behind the planting wheel to give the plant time to settle once the soil has been pressed down around it.  
+
+\begin{figure}[tbh]
+	\centering
+    \includegraphics[height=1.5in]{figures/tomator_optical_sensor.jpg}
+    \caption[Infrared beam-splitter sensor]{Infrared (880nm) optical sensors setup in beam-splitting configuration.}
+    \label{figure:optical_sensor}
+\end{figure}
+
+The mapping platform consisted of a Holland model 1600 planter equipped with a centimeter level \ac{rtk} system using a single antenna.  In order to determine the planter heading, a linear regression \ac{sse} algorithm was used on three consecutive position measurements. To further increase the accuracy of the system, a dual axis inclinometer was used to take into account the non-zero roll and pitch angles of the planter.  This sensor, along with the \ac{gps}, encoder, and beam-splitter, were all hooked up to National Instruments cRIO embedded computer with an \ac{fpga} for parallel data logging.    
+
+\begin{figure}[tbh]
+	\centering
+    \includegraphics[width=6in]{figures/tomator_planter.jpg}
+    \caption[Tomato mapping platform]{Schematic diagram of planter showing sensor placement.}
+    \label{figure:tomato_planter}
+\end{figure}
+
+In an experiment with 512 tomato plants, the beam-splitting detected 491 objects, however only 249 of those corresponded to actual plants.  The rest were due to soil clods or other debris, and many of the actual plants were missed due to being planted at an angle and being too low to pass through the beam.  Unsurprisingly, these results were considered to be very poor and attributed to the difficulty in finding a good height for the beam splitter to be placed above the ground.
+
+The second method, the encoder wheel, detected 527 planting events.  The additional 15 events were due to plants not being placed in the planter wheel by the operator.  After calibration, both this the encoder wheel distance and beam-splitter sensor achieved average mapping accuracies of approximately 4 centimeters.  The full results of the experiment are copied in table TODO ref. 
+
+%2.4.1.	Beam Splitting
 %2.4.1.1.	Include figure from other paper
 %2.4.1.2.	There’s a paper about mapping seeds, should I cover that too?
           % should be trying to solve at transplanter instead of post? 
+          
+While the encoder wheel was effective in creating an accurate plant map, this approach has several drawbacks. One of these drawbacks is it requires close monitoring of the sensors' status. If an issue goes unnoticed then it could potentially result in a large section of the map being unusable, and without a straightforward way to redo the mapping process. Another disadvantage is it's difficult to extend this method to include differentiating between different groups of plants, which for the experiment described in this thesis was considered a requirement.
+          
+It's also worth noting that both <> and <> implemented similar systems using infrared seed detectors, and these sensors were much more successful at reliably determining plant locations.  The accuracy results of these systems were similar to those shown in table TODO.
+          
+\subsection{Post-Planting Solutions}
+
+Constant stopping, too much motion and difficult shading make its not ideal for images. 
+
 %2.4.2.	Image Based Mapping
 %2.4.2.1.	Include figure from other paper
 
@@ -24,7 +59,7 @@ A key step in any mapping process is the correct choice of coordinate frames.  I
 
 \subsection{Latitude and Longitude}
 
-A common frame that is fixed to the Earth is a spherical coordinate frame, with the angles referred to as latitude and longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid called a datum.  The datum that is used in this research is the World Geodetic System (WGS-84) which is the default datum used by the Global Positioning System (GPS) <TODO cite?>.  The third dimension is altitude and is measured relative to the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
+A common frame that is fixed to the Earth is a spherical coordinate frame, with the angles referred to as latitude and longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the World Geodetic System (WGS-84) which is the default datum used by the Global Positioning System (GPS) <TODO cite?>.  The third dimension is altitude and is measured relative to the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
 
 \begin{figure}[tbh]
 	\centering

@@ -1,0 +1,8 @@
+Salvo 650 - Four row seed planter.
+RTK GPS
+Ultra-precision farming
+Two single board computers.
+Linear regression.
+Interface to GPS and wheel-encoders for speed
+3.4 cm within a germinated plant
+

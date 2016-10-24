@@ -1,0 +1,9 @@
+Planting wheel equipped with encoder providing 0.1 degrees, or .45 millimeters along the row.
+Also used optical encoder on unpowered wheel to measure transplanter distance with resolution of 0.6 mm.
+Optical light-beam based sensor to detect when a plant passed through the beam.  1 meter behind planter to allow plant to settle. 
+3 triggers - plant encoder, wheel encoder, GPS PPS,
+Used a 1PPS output on GPS.
+tomoto plants 2008
+Planting wheel - 527 events - 512 plants
+IR beam - Detected 491 objects - 249 where actual plants
+LabView cRIO embedded computer.  

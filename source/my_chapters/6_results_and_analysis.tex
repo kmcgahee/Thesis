@@ -109,18 +109,39 @@ The additional errors in the surveyed plants compared to the codes is likely due
 
 \section{Plant Spacing}
 
-An additional check to verify the results is that the plant spacing should be consistent with the output rate of the transplanter.  The histogram below shows the distribution of plant spacing for all the plants.  As expected the most common plant spacing is around 24 inches, however the variances in plant spacing highlights the importance of mapping individual plants, rather than assuming even spacing.
+An additional check to verify the results is that the plant spacing should be consistent with the output rate of the transplanter.  The histogram below shows the distribution of plant spacing for all the plants.  As expected the mean plant spacing is 25.7 inches, which is close to the expected 24 inches. However, the variances in plant spacing highlights the importance of mapping individual plants, and not assuming the transplanter outputs at a consistent rate.
 
-TODO insert histogram.
+\begin{figure}[htb]
+	\centering
+    \includegraphics[width=5in]{figures/plant_spacing.jpg}
+    \caption[Plant spacing histogram]{Histogram of spacing between successive plants.}
+    \label{figure:plant_spacing}
+\end{figure}
 
 \section{Time Analysis}
 
-An important consideration to the success of the mapping process is much time it takes to collect and analyze all of the images. For this experiment the robot speed and camera triggering rate were set as described in section <TODO>.  This resulted in a total driving time of approximately 10 hours spread over 4 different nights.  Each night required 30 minutes for setup and another 30 for tear-down, which resulted in a total of 4 additional hours.  
+An important consideration to the success of the mapping process is how much time it takes to collect and analyze all of the images. For this experiment, the robot speed and camera triggering rate were set as described in section \ref{section:determining_parameters}.  This resulted in a total driving time of approximately 10 hours spread over 4 different nights.  Each night required 30 minutes for setup and another 30 for tear-down, which resulted in a total of 4 additional hours.  
 
-During the 10 hours of driving, the robot collected <> images.  The timing analysis for the post-processing are presented in table <TODO>. These results were bench-marked on a Lenovo S431 ultra-book running a dual core i7-3687 CPU at 2.6 gigahertz (GHz) with 8 gigabytes (GB) of random access memory (RAM).  
+During the 10 hours of driving, the robot collected 54,512 images.  The timing analysis for the post-processing are presented in table <TODO>. These results were bench-marked on a Lenovo S431 ultra-book running a dual core i7-3687 at 2.6 gigahertz with 8 gigabytes of random access memory.  
 
-TODO insert table of stage timing.
+\begin{table}
+    \begin{center}
+    \begin{tabular}[c]{|c|c|c|}
+        \hline
+        Stage & Time Per Image (sec) & Total Time (hours) \\
+        \hline
+        Extracting QR Codes & 0.9 & 13.6   \\
+        Creating Field Structure & - & 0.05   \\
+		Extracting Plant Parts & 1.0 & 15.1   \\
+		Locating Plants & 0.005 & 3   \\
+		Saving Field Map & - & 0.05   \\
+		\hline
+		\textbf{Total} & \textbf{1.9} & \textbf{31.7}   \\ 
+        \hline
+    \end{tabular}
+    \caption[Post-processing time analysis]{Timing analysis for each stage of the post-processing pipeline.}
+    \label{table:timing_analysis}
+   \end{center}
+\end{table}
 
-One thing to note is it's straightforward to run the first stage in parallel for each night images were collected, since these are independent sessions.
-
-TODO compare to manual survey
+One thing to note is it's straightforward to run the first stage in parallel for each night that images were collected.  Also, if extracting plant parts were combined with the first stage, this would result in a large reduction in overall processing time.  
