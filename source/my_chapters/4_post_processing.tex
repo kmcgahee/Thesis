@@ -44,7 +44,7 @@ The first step is to convert the image from the default OpenCV color-space, whic
 
 \begin{figure}
 	\centering
-    \includegraphics[width=5.5in]{figures/bgr_and_hsv.png}
+    \includegraphics[width=5.5in]{figures/bgr_and_hsv.jpg}
     \caption[Color spaces]{Visualization of \ac{(bgr)} (left) and \ac{hsv} (right) color spaces.}
     \label{figure:color_spaces}
 \end{figure} 
@@ -101,7 +101,7 @@ The range threshold discussed in section \ref{section:qr_thresholding} is effect
 
 \begin{figure}
 	\centering
-    \includegraphics[width=5.5in]{figures/adaptive_threshold.png}
+    \includegraphics[width=5.5in]{figures/adaptive_threshold.jpg}
     \caption[Adaptive threshold]{Comparison showing how an adaptive, rather than a global, threshold can make a code readable by keeping the bottom right corner intact.}
     \label{figure:adaptive_threshold}
 \end{figure} 
@@ -121,7 +121,7 @@ The next step is to assign each group QR code to a specific row based on its fie
 
 \begin{figure}
 	\centering
-    \includegraphics[width=6in]{figures/sweeping_algorithm.png}
+    \includegraphics[width=6in]{figures/sweeping_algorithm.jpg}
     \caption[Sweeping projection algorithm]{Example of the sweeping projection algorithm. Row codes are shown in orange and four group codes in red.  At each step the left-most group code is assigned to the nearest segment, shown as a red line.  The result is three codes belong to the left row, and the fourth group code belongs to the middle row.}
     \label{figure:sweeping_algorithm}
 \end{figure}
@@ -134,7 +134,7 @@ Once all group codes are assigned to a row, it's possible to tell which codes co
 
 \begin{figure}
 	\centering
-    \includegraphics[height=2in]{figures/group_segments.png}
+    \includegraphics[height=2in]{figures/group_segments.jpg}
     \caption[Group segments]{Example of four rows planted two rows at a time.  The red dashed arrows show the direction of planting.  There are four group segments, two blue and two green.  The blue segments belong to the same plant group, and the green segments belong to a second plant group.}
     \label{figure:group_segments}
 \end{figure}
@@ -243,7 +243,7 @@ The individual penalty components are calculated with the piece-wise linear func
 
 \begin{figure}
 	\centering
-    \includegraphics[width=5.5in]{figures/piece_wise.png}
+    \includegraphics[width=5.5in]{figures/piece_wise.jpg}
     \caption[Group segments]{Piece-wise penalty functions. "$e$" represents the expected spacing between successive plants.}
     \label{figure:piecewise_penalties}
 \end{figure}
@@ -254,7 +254,7 @@ A simple example of the algorithm can be seen in figure \ref{figure:recursive_al
 
 \begin{figure}
 	\centering
-    \includegraphics[width=5in]{figures/recursive_algorithm2.png}
+    \includegraphics[width=5in]{figures/recursive_algorithm2.jpg}
     \caption[Recursive splitting algorithm]{Example of the recursive splitting algorithm finding most likely plants within a segment.}
     \label{figure:recursive_algorithm}
 \end{figure}
@@ -270,7 +270,7 @@ One complication that is addressed in this final stage is there may be a relativ
 
 \begin{figure}
 	\centering
-    \includegraphics[height=1.7in]{figures/sepentine.png}
+    \includegraphics[height=1.7in]{figures/sepentine.jpg}
     \caption[Serpentine numbering]{Example of serpentine numbering.}
     \label{figure:serpentine}
 \end{figure}
