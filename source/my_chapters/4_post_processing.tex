@@ -29,9 +29,7 @@ Every stage of the pipeline is written in the Python programming language, and a
 \section{Stage 0 - Calculating Camera State}
 \label{processing-stage0}
 
-The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken, referred to as the camera's state.  This is performed by the data collection program, since it is a general process that's useful for many other types of sensors in addition to cameras.  
-
-However, the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in \ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
+The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken.  This is performed by the data collection program, since it is a general process that's useful for many other types of sensors in addition to cameras.  However, the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in \ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
 
 Even though the modified \ac{utm} coordinates use the ground reference for the z-component, the height above the ellipsoid is also tracked for each image and item mapped in the field.  This information could be used to estimate relative differences in water content in different parts of the field due to changes in elevation. 
 
@@ -44,7 +42,7 @@ The first goal after calculating the position and orientation of each image is t
 
 The first step is to convert the image from the default OpenCV color-space, which is \ac{bgr}, to the \ac{hsv} color space.  As can be seen in figure \ref{figure:color_spaces}, this is a cylindrical coordinate system which separates image intensity from the color information which makes it more robust to changes in lighting. This \ac{hsv} color space is also more aligned to how humans think about color TODO insert reference.
 
-\begin{figure}[htb]
+\begin{figure}
 	\centering
     \includegraphics[width=5.5in]{figures/bgr_and_hsv.png}
     \caption[Color spaces]{Visualization of \ac{(bgr)} (left) and \ac{hsv} (right) color spaces.}
@@ -58,7 +56,7 @@ An important consideration is that most digital cameras perform a gamma-encoding
 
 The second step is to separate the white QR code from the rest of the image.  This is accomplished by applying a range threshold for each of the HSV components.  This threshold will output a 1 (white pixel) if the all 3 components are in the specified range, otherwise it will output a 0 (black pixel).  In OpenCV hue is defined in the range of 0 to 179, and both saturation and value have a range of 0 to 255.  The range that was experimentally determined for separating QR codes is shown in table \ref{table:qr_hsv_ranges}.
 
-\begin{table}[htb]
+\begin{table}
     \begin{center}
     \caption[QR Code Detection Values]{HSV range for detecting QR codes.}
     \begin{tabular}[c]{|c|c|c|c|}
@@ -80,14 +78,28 @@ This threshold results in a binary image where pixels that are mostly white, suc
 
 The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a minimum bounding box, which is the smallest rotated rectangle that encompasses the entire object.  These bounding boxes are filtered to remove ones that are either too small or too large to be QR codes.  For the codes constructed from pot labels 
 
-TODO include image showing original and thresholded with rotated bounding box. 
+\begin{figure}
+	\centering
+    \includegraphics[width=5in]{figures/code_extraction_step1.jpg}
+    \caption[Color spaces]{Visualization of \ac{(bgr)} (left) and \ac{hsv} (right) color spaces.}
+    \label{figure:code_extraction}
+\end{figure} 
 
 \subsection{Reading QR Codes}
 \label{section:reading_codes}
 
-The final step is to use these bounding boxes to extract parts of the original to run through the QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  However, the ZBar program requires a grayscale or binary image, and thus a threshold must be applied to the small, extracted color image.  The range threshold discussed in section \ref{section:qr_thresholding} is effective for finding possible QR codes, but does not do a good job maintaining the grid of white and black squares that make up the QR code.  Instead the \ac{bgr} image is converted to grayscale and if a simple global threshold does not result in a successful code read, then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in figure TODO. 
+The final step is to use these bounding boxes to extract parts of the original to run through the QR reading program.  From the researcher's experience the ZBar open-source program provided the best results.  However, the ZBar program requires a grayscale or binary image, and thus a threshold must be applied to the small, extracted color image. 
 
-\begin{figure}[htb]
+\begin{figure}
+	\centering
+    \includegraphics[width=6in]{figures/code_extraction_step2.jpg}
+    \caption[Color spaces]{Visualization of \ac{(bgr)} (left) and \ac{hsv} (right) color spaces.}
+    \label{figure:code_extraction2}
+\end{figure} 
+
+The range threshold discussed in section \ref{section:qr_thresholding} is effective for finding possible QR codes, but does not do a good job maintaining the grid of white and black squares that make up the QR code.  Instead the \ac{bgr} image is converted to grayscale and if a simple global threshold does not result in a successful code read, then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in figure TODO. 
+
+\begin{figure}
 	\centering
     \includegraphics[width=5.5in]{figures/adaptive_threshold.png}
     \caption[Adaptive threshold]{Comparison showing how an adaptive, rather than a global, threshold can make a code readable by keeping the bottom right corner intact.}
@@ -107,7 +119,7 @@ This stage begins by pairing the start and end QR code associated with each row.
 
 The next step is to assign each group QR code to a specific row based on its field coordinates.  As some rows can span several hundred meters, it's not always possible to assign a QR code to the nearest row defined by a vector between the row start and end codes.  Instead a sweeping algorithm is used.   The idea is to sweep across the field, from left to right, and incrementally add QR codes to each row as shown in figure \ref{figure:sweeping_algorithm}. Once a code is added to a row it splits that row into smaller segments.  A code is assigned to the row which has the closest segment based on lateral distance to the code's field location. 
 
-\begin{figure}[htb]
+\begin{figure}
 	\centering
     \includegraphics[width=6in]{figures/sweeping_algorithm.png}
     \caption[Sweeping projection algorithm]{Example of the sweeping projection algorithm. Row codes are shown in orange and four group codes in red.  At each step the left-most group code is assigned to the nearest segment, shown as a red line.  The result is three codes belong to the left row, and the fourth group code belongs to the middle row.}
@@ -120,7 +132,7 @@ This algorithm can effectively account for small amounts of curvature in the row
 
 Once all group codes are assigned to a row, it's possible to tell which codes come before and after one another.  A group segment is defined by a beginning code and the next code that follows it in the direction of planting.  This group segment is where the plants for a given code are located.  However, it's possible that when the transplanter reaches the end of a row the current plant group isn't finished and continues into the next pass.  A pass refers to the transplanter driving once down the field, so a 2-row transplanter would have a pass containing 2 rows.  Therefore, the group segments at the end of corresponding are paired together into complete groups, which is shown in figure \ref{figure:group_segments}.
 
-\begin{figure}[htb]
+\begin{figure}
 	\centering
     \includegraphics[height=2in]{figures/group_segments.png}
     \caption[Group segments]{Example of four rows planted two rows at a time.  The red dashed arrows show the direction of planting.  There are four group segments, two blue and two green.  The blue segments belong to the same plant group, and the green segments belong to a second plant group.}
@@ -132,7 +144,7 @@ Once all group codes are assigned to a row, it's possible to tell which codes co
 
 Similar to the process of extracting QR codes, this stage converts each image to the \ac{hsv} color space, applies a range threshold, and filters the objects based on size.  Since this stage is looking for plant leaves rather than white QR codes it uses different ranges for the HSV components, which are displayed in table \ref{table:plant_leaves_hsv_ranges}.  
 
-\begin{table}[htb]
+\begin{table}
     \begin{center}
     \caption[Plant Leaf Detection Values]{HSV range for detecting plant leaves.}
     \begin{tabular}[c]{|c|c|c|c|}
@@ -150,7 +162,7 @@ Similar to the process of extracting QR codes, this stage converts each image to
 
 In addition to plant leaves, this stage also searches for plant markers.  The values for the two types of markers discussed in section \ref{section:plant_markers} are shown in the tables below.  The minimum saturation and value for the tag markers can be set much higher than the wooden blue sticks, which leads to more reliable detection.   
 
-\begin{table}[hb]
+\begin{table}
     \begin{center}
     \caption[Blue Stick Detection Values]{HSV range for detecting blue stick markers.}
     \begin{tabular}[c]{|c|c|c|c|}
@@ -166,7 +178,7 @@ In addition to plant leaves, this stage also searches for plant markers.  The va
    \end{center}
 \end{table}
 
-\begin{table}[hb]
+\begin{table}
     \begin{center}
     \caption[Yellow Tags Detection Values]{HSV range for detecting yellow tags.}
     \begin{tabular}[c]{|c|c|c|c|}
@@ -182,16 +194,7 @@ In addition to plant leaves, this stage also searches for plant markers.  The va
    \end{center}
 \end{table}
 
-Similar to the QR codes these values are set based on experimentation.   However, good values for these thresholds are more likely to change due to changes in external lighting or camera settings.  This is because they depend on finding certain colors rather than white.
-
-
-
-
-Besides the difference in range values this stage also adds an extra step after the threshold and before finding the contours in the image.  Then step applies two filters, the first being erosion and the second dilation.  The erosion filter removes noise from the image and the then the dilation step connects adjacent contours.  These effects can be seen in figure TODO.  The reason this step isn't used for the 
-
-TODO maybe explain why connecting contours is a good thing.
-
-The reason why this extra step isn't used in stage 1 is that step is already more robust based on the selected HSV range and the square nature of the QR codes doesn't benefit from connecting contours.   
+Similar to the QR codes these values are set based on experimentation.   However, good values for these thresholds are more likely to change due to changes in external lighting or camera settings.  This is because they depend on finding certain colors rather than white.  
 
 \section{Stage 4 - Locating Plants}
 \label{processing-stage4}
@@ -202,7 +205,12 @@ The most challenging aspect of the pipeline is reliably determining which plant 
 
 The task of grouping plant parts into individual plants is done using a hierarchical clustering algorithm.  In this application a cluster is represented by the minimum bounding rectangle of one or more plant parts.  If two rectangles are clustered together the resulting cluster is represented by the smallest bounding rectangle that fits both the original rectangles.  This algorithm combines the nearest two clusters into a single cluster and keeps repeating this process until an end condition is met.  The distance between two clusters is defined to be the smallest distance between any of the 4 corners of the rotated rectangles.   The end conditions are either (1) there is nothing left to cluster or (2) the closest cluster is too far apart to be clustered based on a user defined threshold.  In addition, there is a maximum size limit on the clusters, which is set to be the maximum expected plant size in the field.  Finally any tiny, unclustered plant parts are removed from the list of possible plants. 
 
-TODO include figure showing result of clustering.
+\begin{figure}
+	\centering
+    \includegraphics[width=5in]{figures/clustering.jpg}
+    \caption[Sweeping projection algorithm]{Example of hierarchical clustering. At each step the closest bounding boxes are merged together until there is one containing the entire plant.}
+    \label{figure:clustering}
+\end{figure}
 
 \subsection{Recursive Segment Splitting}
 
@@ -233,7 +241,7 @@ where those variables represent:
 
 The individual penalty components are calculated with the piece-wise linear functions shown in figure \ref{figure:piecewise_penalties}.  The plant-part boost (B) is calculated as a product of additional scales for each plant part types.  If a certain type of plant part is missing from a possible plant, then its scale is set to 1 so that it has no effect.  
 
-\begin{figure}[hb]
+\begin{figure}
 	\centering
     \includegraphics[width=5.5in]{figures/piece_wise.png}
     \caption[Group segments]{Piece-wise penalty functions. "$e$" represents the expected spacing between successive plants.}
@@ -244,7 +252,7 @@ The lateral and closeness penalties are defined as infinity if the input exceeds
 
 A simple example of the algorithm can be seen in figure \ref{figure:recursive_algorithm}.  At the beginning there is one segment between the two QR codes, which is shown in the first image.  The second image shows the result of the splitting algorithm running on segment labeled \#1. It selects one plant based on the bottom code and one based on the top code.  Segment \#2 is determined to be too short to contain more plants, however the algorithm is recursively run again on segments \#3 and \#4.  This results in the third image, which now contains five segments.  One plant had to be created because the other two possible plants on segment \#3 had too much lateral error to be considered.   
 
-\begin{figure}[hb]
+\begin{figure}
 	\centering
     \includegraphics[width=5in]{figures/recursive_algorithm2.png}
     \caption[Recursive splitting algorithm]{Example of the recursive splitting algorithm finding most likely plants within a segment.}
@@ -256,15 +264,13 @@ Similar to the sweeping projection algorithm used to assign row numbers, this al
 \section{Stage 5 - Saving Field Map}
 \label{processing-stage5}
 
-The final stage in the pipeline is generating a field map file.  This process first begins by assigning every plant in the field a unique number so it can be easily referenced in a database.  This numbering begins with plant 1 at the start of the first row, and then follows a serpentine pattern which can be seen in figure \ref{figure:serpentine}. This numbering system is chosen because it represents how a person is likely to inspect plants when walking through the field.  This numbering is done twice, once including QR codes and one just numbering plants.  After the numbering is complete, all the codes and plants are written to a \ac{csv} file, which can be imported into a database.
+The final stage in the pipeline is generating a field map file.  The first step is to assign every plant in the field a unique number so it can be easily referenced in a database.  This numbering begins with plant 1 at the start of the first row, and then follows a serpentine pattern which can be seen in figure \ref{figure:serpentine}. This numbering system is chosen because it represents how a person is likely to inspect plants when walking through the field.  This numbering is done twice, once including QR codes and one just numbering plants.  
 
-TODO discuss translating
+One complication that is addressed in this final stage is there may be a relative shift between the coordinates calculated by the mapping platform and the desired coordinates.  This is due to the fact that \ac{rtk} systems are only accurate relative to the base station.  If the location of the base station isn't accurately surveyed then the field map will contain an offset in the both the northing and easting directions.   To account for this offset, a file can be provided to the stage containing the coordinates of QR codes relative to the desired reference station.  The average offset between these surveyed codes and the mapped codes is computed and every item in the map is translated by this amount. After this correction is complete all the codes and plants are written to a \ac{csv} file, which can be imported into a database.
 
-\begin{figure}[hb]
+\begin{figure}
 	\centering
     \includegraphics[height=1.7in]{figures/sepentine.png}
     \caption[Serpentine numbering]{Example of serpentine numbering.}
     \label{figure:serpentine}
 \end{figure}
-
-
