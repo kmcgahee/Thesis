@@ -15,7 +15,9 @@ total_errors = [east_errors; north_errors];
 
 surveyed = original + total_errors;
 
-avg_errors = mean(total_errors, 2)
+avg_errors = mean(total_errors, 2);
+
+abs_avg_errors = mean(abs(total_errors), 2)
 
 std(total_errors, 0, 2)
 
@@ -41,6 +43,8 @@ north_errors = -.8 + 5 *randn(1,20);
 plant_errors = [east_errors; north_errors];
 
 avg_plant_errors = mean(plant_errors, 2)
+
+abs_avg_plant_errors = mean(abs(plant_errors), 2)
 
 scatter(east_errors, north_errors, 'b', '*')
 hold on
