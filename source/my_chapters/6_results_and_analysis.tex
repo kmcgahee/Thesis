@@ -47,12 +47,11 @@ The assigned coordinates of the created plants were projected back onto images t
 
 As discussed in section \ref{processing-stage5}, the coordinates of all the plants and QR codes had to be offset into the coordinate frame used by the Land Institute.  This was accomplished by manually surveying 10 codes using the Land Institute \ac{rtk} receiver and base-station, and then calculating the northing and easting offsets that would make the average error zero.  
 
-After this offset is applied, the errors of the 10 surveyed codes were calculated and plotted in figure \ref{code_errors}.  The reason that codes were used to calculate the offset, rather than plants, is it's easier for the post-processing to consistently identify the center of the code.  The average error is zero because that is how the shift in coordinates was calculated.  A good check would have been to use the robot's \ac{rtk} receiver to also survey the codes, but that was not realized until afterwards.
+After this offset is applied, the errors of the 10 surveyed codes were calculated and plotted in figure \ref{figure:code_errors}.  The reason that codes were used to calculate the offset, rather than plants, is it's easier for the post-processing to consistently identify the center of the code.  The average error is zero because that is how the shift in coordinates was calculated.  A good check would have been to use the robot's \ac{rtk} receiver to also survey the codes, but that was not realized until afterwards.
 
   \begin{figure}
 	\centering
     \includegraphics[height=4in]{figures/code_errors.jpg}
-    \label{figure:code_errors}
     \newline
     \newline
     \centering
@@ -69,7 +68,8 @@ After this offset is applied, the errors of the 10 surveyed codes were calculate
     \end{tabular}
     \captionlistentry[table]{Position errors of QR codes}
     \captionsetup{labelformat=andtable}
-    \caption{Errors in reference QR codes after shifting to the Land Institute coordinate system.}
+    \caption[Errors in reference QR codes]{Errors in reference QR codes after shifting to the Land Institute coordinate system.}
+    \label{figure:code_errors}
   \end{figure}
 
 An additional 20 plants were surveyed to verify that their mapped positions were accurate enough to distinguish them from their neighboring plants.  As with the surveyed codes, the plants were chosen randomly and evenly distributed throughout the field.   A similar plot showing the errors for each surveyed plant can be seen in figure \ref{figure:plant_errors}.  The average error is relatively small, which shows the offsets calculated using the codes weren't biased.   
@@ -77,7 +77,6 @@ An additional 20 plants were surveyed to verify that their mapped positions were
   \begin{figure}
 	\centering
     \includegraphics[height=4in]{figures/plant_errors.jpg}
-    \label{figure:plant_errors}
     \newline
     \newline
     \centering
@@ -94,7 +93,8 @@ An additional 20 plants were surveyed to verify that their mapped positions were
     \end{tabular}
     \captionlistentry[table]{Position errors of plants}
     \captionsetup{labelformat=andtable}
-    \caption{Error between mapped and manually surveyed plants.}
+    \caption[Errors in surveyed plants]{Error between mapped and manually surveyed plants.}
+    \label{figure:plant_errors}
   \end{figure}
 
 The largest source of errors from these measurement are errors in assigning an accurate time-stamp to each image.  These timing errors are primarily caused by camera latency as well as latency in the \ac{gnss} receiver.  Camera latency is the amount of time between when the data collection program commands the camera to take an image, and when the image is actually exposed.  \ac{gnss} latency is the amount of time between when a position is calculated by the receiver, and when it is received by the data collection program. 

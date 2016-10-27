@@ -107,6 +107,18 @@
 \usepackage[font=small,labelfont=bf,tableposition=top]{caption}
 \DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
 
+% Make acronyms not blue
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\AC@hyperlink}[2]{%
+    \begingroup
+      \hypersetup{hidelinks}%
+      \hyperlink{#1}{#2}%
+    \endgroup
+  }%
+}
+\makeatother
+
 % +--------------------------------------------------------------------+
 % |
 % | Citation and Bibliography Style
@@ -270,6 +282,10 @@
 % | These commands add the table of contents, list of figures, and
 % | list of tables.
 % +--------------------------------------------------------------------+
+
+% Added by KLM
+\renewcommand\cftchapafterpnum{\vskip-2pt}
+\renewcommand\cftsecafterpnum{\vskip-1pt}
 
 \tableofcontents
 \listoffigures
