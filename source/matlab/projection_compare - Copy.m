@@ -67,6 +67,10 @@ r32 = R3(2);
 r33 = R3(3);
 NE_euclidean = subs(NE_euclidean);
 
-% This will print (1) (true) for each of the north and east symbollic equations if they are equivalent.
+% Display results
+%NE_euclidean = simplify(NE_euclidean)
+%NE_projective = simplify(NE_projective)
+
+% This will print (1) (true) when the symbollic equations are equivalent.
 isAlways(NE_euclidean == NE_projective)
 

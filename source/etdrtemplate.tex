@@ -108,16 +108,16 @@
 \DeclareCaptionLabelFormat{andtable}{#1~#2  \&  \tablename~\thetable}
 
 % Make acronyms not blue
-\makeatletter
-\AtBeginDocument{%
-  \renewcommand*{\AC@hyperlink}[2]{%
-    \begingroup
-      \hypersetup{hidelinks}%
-      \hyperlink{#1}{#2}%
-    \endgroup
-  }%
-}
-\makeatother
+%\makeatletter
+%\AtBeginDocument{%
+%  \renewcommand*{\AC@hyperlink}[2]{%
+%    \begingroup
+%      \hypersetup{hidelinks}%
+%      \hyperlink{#1}{#2}%
+%    \endgroup
+%  }%
+%}
+%\makeatother
 
 % +--------------------------------------------------------------------+
 % |
@@ -155,6 +155,7 @@
 \hypersetup{
     linktocpage=true,
     colorlinks=true,
+    hidelinks=true,
     bookmarks=true,
     citecolor=blue,
     urlcolor=blue,
