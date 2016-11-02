@@ -4,7 +4,7 @@
 \chapter{Post-Processing Pipeline}
 \label{chapter:pipeline}
 
-Once the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a sequential, or pipeline, fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the post-processing pipeline followed by a detailed explanation of each step.
+After the images are collected they must be converted into a field map. This task is accomplished by a set of scripts that are run in a sequential, or pipeline, fashion, where the output of one script is used as the input to the next.  This chapter provides a general overview of the post-processing pipeline followed by a detailed explanation of each step.
 
 \section{Pipeline Overview}
 \label{processing-overview}
@@ -27,7 +27,7 @@ Every stage of the pipeline is written in the Python programming language, and a
 \section{Stage 0 - Calculating Camera State}
 \label{processing-stage0}
 
-The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken.  This is performed by the data collection program since it is a general process that's useful for many other types of sensors in addition to cameras.  However, after this calculation is done the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in section \ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
+The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken.  This is performed by the data collection program since it is a general process that's useful for many other types of sensors in addition to cameras.  However, after this calculation is done the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in Section~\ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
 
 Even though the modified \ac{utm} coordinates use the ground reference for the z-component, the height above the ellipsoid is also tracked for each image and item mapped in the field.  This information could be used to estimate relative differences in water content in different parts of the field due to changes in elevation. 
 
@@ -38,7 +38,7 @@ The initial goal after calculating the position and orientation of each image is
 
 \subsection{Converting Color-Spaces}
 
-The first step is to convert the image from the default color-space, which is \ac{bgr}, to the \ac{hsv} color space.  As can be seen in figure \ref{figure:color_spaces}, this \ac{hsv} space is a cylindrical coordinate system which separates image intensity from color information.  This makes colors more robust to changes in lighting, and the angular hue component is better suited for describing how humans perceive the color spectrum.
+The first step is to convert the image from the default color-space, which is \ac{bgr}, to the \ac{hsv} color space.  As can be seen in Figure~\ref{figure:color_spaces}, this \ac{hsv} space is a cylindrical coordinate system which separates image intensity from color information.  This makes colors more robust to changes in lighting, and the angular hue component is better suited for describing how humans perceive the color spectrum.
 
 \begin{figure}
 	\centering
@@ -52,7 +52,7 @@ An important consideration is that most digital cameras perform a gamma-encoding
 \subsection{Thresholding}
 \label{section:qr_thresholding}
 
-The second step is to separate the white \ac{qr} codes from the rest of the image.  This is accomplished by applying a range threshold for each of the \ac{hsv} components.  This threshold will output a 1 (white pixel) if the all three components are in the specified range, otherwise it will output a 0 (black pixel).  In OpenCV hue is defined in the range of 0 to 179, and both saturation and value have a range of 0 to 255.  The range that was experimentally determined for separating \ac{qr} codes is shown in table \ref{table:qr_hsv_ranges}.
+The second step is to separate the white \ac{qr} codes from the rest of the image.  This is accomplished by applying a range threshold for each of the \ac{hsv} components.  This threshold will output a 1 (white pixel) if the all three components are in the specified range, otherwise it will output a 0 (black pixel).  In OpenCV hue is defined in the range of 0 to 179, and both saturation and value have a range of 0 to 255.  The range that was experimentally determined for separating \ac{qr} codes is shown in Table~\ref{table:qr_hsv_ranges}.
 
 \begin{table}
     \begin{center}
@@ -70,7 +70,7 @@ The second step is to separate the white \ac{qr} codes from the rest of the imag
    \end{center}
 \end{table}
 
-This threshold results in a binary image where pixels that are mostly white, such as \ac{qr} codes, are all white, and everything else is all black.  An example of a thresholded image can be seen in figure \ref{figure:code_extraction}.
+This threshold results in a binary image where pixels that are mostly white, such as \ac{qr} codes, are all white, and everything else is all black.  An example of a thresholded image can be seen in Figure~\ref{figure:code_extraction}.
 
 \begin{figure}
 	\centering
@@ -81,7 +81,7 @@ This threshold results in a binary image where pixels that are mostly white, suc
 
 \subsection{Filtering by Bounding Boxes}
 
-The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a minimum bounding box which is the smallest rotated rectangle that encompasses the entire object.  An example of a bounding box can be seen as a red rectangle in figure \ref{figure:code_extraction}.  These bounding boxes are filtered to remove ones that are either too small or too large to possibly be a \ac{qr} code.
+The third step is finding the set of external contours, or outermost edges, of each object in the binary image.  Each set of contours is then assigned a minimum bounding box which is the smallest rotated rectangle that encompasses the entire object.  An example of a bounding box can be seen as a red rectangle in Figure~\ref{figure:code_extraction}.  These bounding boxes are filtered to remove ones that are either too small or too large to possibly be a \ac{qr} code.
 
 \subsection{Reading QR Codes}
 \label{section:reading_codes}
@@ -95,7 +95,7 @@ The final step is to use these bounding boxes to extract sections of the origina
     \label{figure:code_extraction2}
 \end{figure} 
 
-The \ac{hsv} range threshold is effective for finding possible codes, but it does not do a good job maintaining the grid of white and black squares that make up the \ac{qr} code.  Instead, the \ac{bgr} image is converted to an intensity image, and if a simple global threshold does not result in a successful code read then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in figure \ref{figure:adaptive_threshold}. 
+The \ac{hsv} range threshold is effective for finding possible codes, but it does not do a good job maintaining the grid of white and black squares that make up the \ac{qr} code.  Instead, the \ac{bgr} image is converted to an intensity image, and if a simple global threshold does not result in a successful reading of the code then an adaptive threshold is tried instead.  This results in a readable code even if there is noticeable image glare as seen in Figure~\ref{figure:adaptive_threshold}. 
 
 \begin{figure}
 	\centering
@@ -113,9 +113,9 @@ The second stage of the pipeline involves assigning row numbers to each \ac{qr} 
 
 \subsection{Assigning Codes to Rows}
 
-This stage begins by pairing the row markers associated with the start and end of each row.  Since the locations of the marker codes are calculated from the images, the average row heading can be calculated.  This row heading is then used to transform the \ac{utm} coordinates into the field coordinate frame discussed in section \ref{section:field_coordinates}.
+This stage begins by pairing the row markers associated with the start and end of each row.  Since the locations of the marker codes are calculated from the images, the average row heading can be calculated.  This row heading is then used to transform the \ac{utm} coordinates into the field coordinate frame discussed in Section~\ref{section:field_coordinates}.
 
-The next step is to assign each group \ac{qr} code to a specific row based on its field coordinates.  As some rows can span several hundred meters, it's not always possible to assign a code to the nearest row defined by a vector between the row start and end codes.  Instead a sweeping algorithm is used.   The idea is to sweep across the field, from left to right, and incrementally add \ac{qr} codes to each row as shown in figure \ref{figure:sweeping_algorithm}. Once a code is added to a row it splits that row into smaller segments.  A code is assigned to the row which has the closest segment based on the lateral distance to the code's field location. 
+The next step is to assign each group \ac{qr} code to a specific row based on its field coordinates.  As some rows can span several hundred meters, it's not always possible to assign a code to the nearest row defined by a vector between the row start and end codes.  Instead a sweeping algorithm is used.   The idea is to sweep across the field, from left to right, and incrementally add \ac{qr} codes to each row as shown in Figure~\ref{figure:sweeping_algorithm}. Once a code is added to a row it splits that row into smaller segments.  A code is assigned to the row which has the closest segment based on the lateral distance to the code's field location. 
 
 \begin{figure}
 	\centering
@@ -124,11 +124,11 @@ The next step is to assign each group \ac{qr} code to a specific row based on it
     \label{figure:sweeping_algorithm}
 \end{figure}
 
-This algorithm can effectively account for small amounts of curvature in the rows, but it is not designed to work on rows that are not planted straight to begin with.
+This algorithm can effectively account for small amounts of curvature in the rows, but it is not designed to work on rows that are not planted in nominally straight lines.
 
 \subsection{Organizing Group Segments}
 
-Once all group codes are assigned to a row, it's possible to tell which codes come before and after one another.  A group segment is defined by a beginning code and the next code that follows it in the direction of planting.  This group segment is where the plants for a given code are located.  It's possible, however, that when the transplanter reaches the end of a row that the current plant group isn't finished and continues into the next pass.  A pass refers to the transplanter driving once down the field, so a 2-row transplanter would have a pass containing 2 rows.  Therefore, the group segments at the end of corresponding rows are paired together into complete groups.  An example of this is shown in figure \ref{figure:group_segments}.
+Once all group codes are assigned to a row, it's possible to tell which codes come before and after one another.  A group segment is defined by a beginning code and the next code that follows it in the direction of planting.  This group segment is where the plants for a given code are located.  It's possible, however, that when the transplanter reaches the end of a row that the current plant group isn't finished and continues into the next pass.  A pass refers to the transplanter driving once down the field, so a 2-row transplanter would have a pass containing 2 rows.  Therefore, the group segments at the end of corresponding rows are paired together into complete groups.  An example of this is shown in Figure~\ref{figure:group_segments}.
 
 \begin{figure}
 	\centering
@@ -140,7 +140,7 @@ Once all group codes are assigned to a row, it's possible to tell which codes co
 \section{Stage 3 - Extracting Plant Parts}
 \label{processing-stage3}
 
-Similar to the process of extracting \ac{qr} codes, this stage converts each image to the \ac{hsv} color space, applies a range threshold, and filters the objects based on size.  Since this stage is looking for plant leaves rather than white \ac{qr} codes, it uses different ranges for the \ac{hsv} components.  These alternate ranges are defined in table \ref{table:plant_leaves_hsv_ranges}.
+Similar to the process of extracting \ac{qr} codes, this stage converts each image to the \ac{hsv} color space, applies a range threshold, and filters the objects based on size.  Since this stage is looking for plant leaves rather than white \ac{qr} codes, it uses different ranges for the \ac{hsv} components.  These alternate ranges are defined in Table~\ref{table:plant_leaves_hsv_ranges}.
 
 \begin{table}
     \begin{center}
@@ -158,7 +158,7 @@ Similar to the process of extracting \ac{qr} codes, this stage converts each ima
    \end{center}
 \end{table}
 
-In addition to plant leaves, this stage also searches for plant markers.  The values for the two types of markers discussed in section \ref{section:plant_markers} are shown in the tables \ref{table:stick_hsv_ranges} and \ref{table:tag_ranges}.  The minimum saturation and value for the tag markers can be set much higher than the wooden blue sticks which leads to more reliable detection.   
+In addition to plant leaves, this stage also searches for plant markers.  The values for the two types of markers discussed in Section~\ref{section:plant_markers} are shown in the tables \ref{table:stick_hsv_ranges} and \ref{table:tag_ranges}.  The minimum saturation and value for the tag markers can be set much higher than the wooden blue sticks which leads to more reliable detection.   
 
 \begin{table}
     \begin{center}
@@ -197,7 +197,7 @@ Similar to the \ac{qr} codes these values are set based on experimentation.   Un
 \section{Stage 4 - Locating Plants}
 \label{processing-stage4}
 
-The most challenging aspect of the pipeline is reliably determining which plant parts found in the previous stage belong to the same plant, and which of those are actual plants that should be mapped.  Plant parts refers to both the leaves of the plant as well as any plant marker associated with the plant.  This is challenging because there is often unavoidable plant debris in the field that comes from the tilling right before planting. Plant markers, such as the blue sticks, help with this issue, but as discussed in section \ref{section:plant_localization} the blue sticks could not always be detected.  In addition, for large experiments it may not always be feasible to have individual markers for every plant.  
+The most challenging aspect of the pipeline is reliably determining which plant parts found in the previous stage belong to the same plant, and which of those are actual plants that should be mapped.  Plant parts refers to both the leaves of the plant as well as any plant marker associated with the plant.  This is challenging because there is often unavoidable plant debris in the field that comes from the tilling right before planting. Plant markers, such as the blue sticks, help with this issue, but as discussed in Section~\ref{section:plant_localization} the blue sticks could not always be detected.  In addition, for large experiments it may not always be feasible to have individual markers for every plant.  
 
 \subsection{Hierarchical Clustering}
 
@@ -224,12 +224,12 @@ After the clustering is completed for an entire plant segment, the list of possi
 \item[Step 5] Split the original segment into smaller segments using the most likely plants as new endpoints.  If the new segments are too short to contain plants then the algorithm is finished.  Otherwise, recursively go back to step 1 for each of the new segments.
 \end{description}
 
-The idea behind working from the both directions at the same time is the start and end \ac{qr} codes are known locations in the field, and thus plants near them can be more reliably detected.  In order to determine the most likely plant in step 3, each possible plant is assigned a penalty value.  This value is calculated as
+The idea behind working from the both directions at the same time is the start and end \ac{qr} codes are known locations in the field, and thus plants near them can be more reliably detected.  In order to determine the most likely plant in step 3, each possible plant is assigned a penalty value.  This value is calculated using
 
 \begin{center}
 Penalty = ($s_L$L + $s_P$P + $s_C$C) / ($s_B$B)
 \end{center}
-where those variables represent:
+where the variables are described below.
 
 \begin{description}
 \item[Lateral Error (L)] How far off the plant is from the expected line segment.
@@ -239,7 +239,7 @@ where those variables represent:
 \item[Scales ($s_L,s_P,s_C,s_B)$] Relative weightings to change importance of each penalty.
 \end{description}
 
-The individual penalty components are calculated with the piece-wise linear functions displayed in figure \ref{figure:piecewise_penalties}.  The plant-part boost (B) is calculated as a product of additional scales for each plant part type.  If a certain type of plant, for example a blue stick, is missing from a possible plant, then its scale is set to 1 so that it has no effect.  
+The individual penalty components are calculated with the piece-wise linear functions displayed in Figure~\ref{figure:piecewise_penalties}.  The plant-part boost (B) is calculated as a product of additional scales for each plant part type.  If a certain type of plant, for example a blue stick, is missing from a possible plant, then its scale is set to 1 so that it has no effect.  
 
 \begin{figure}
 	\centering
@@ -250,7 +250,7 @@ The individual penalty components are calculated with the piece-wise linear func
 
 The lateral and closeness penalties are defined as infinity if the input exceeds a certain threshold.  If this occurs then the overall penalty will also be set to infinity, and that plant will be removed from the list of possible plants.  If this results in no plants to select from then a plant will be created and placed in the expected location.  These are referred to as "Created Plants", and may occur due to a plant being dead, buried, or skipped during planting.  
 
-A simple example of the algorithm is shown in figure \ref{figure:recursive_algorithm}.  In the first image there is one segment between the two \ac{qr} codes.  The second image shows the result of the splitting algorithm running on segment labeled \#1. It selects one plant based on the bottom code and one based on the top code.  Segment \#2 is determined to be too short to contain more plants, however the algorithm is recursively run again on segments \#3 and \#4.  This results in the third image, which now contains five segments.  One plant had to be created because the other two possible plants on segment \#3 had too much lateral error to be considered.   
+A simple example of the algorithm is shown in Figure~\ref{figure:recursive_algorithm}.  In the first image there is one segment between the two \ac{qr} codes.  The second image shows the result of the splitting algorithm running on segment labeled \#1. It selects one plant based on the bottom code and one based on the top code.  Segment \#2 is determined to be too short to contain more plants, however the algorithm is recursively run again on segments \#3 and \#4.  This results in the third image, which now contains five segments.  One plant had to be created because the other two possible plants on segment \#3 had too much lateral error to be considered.   
 
 \begin{figure}
 	\centering
@@ -264,7 +264,7 @@ Similar to the sweeping projection algorithm used to assign row numbers, this al
 \section{Stage 5 - Saving Field Map}
 \label{processing-stage5}
 
-The final stage in the pipeline is generating a field map file.  This stage begins by assigning every plant in the field a unique number so it can be easily referenced in a database.  This numbering begins with plant \#1 at the start of the first row and then follows a serpentine pattern which can be seen in figure \ref{figure:serpentine}. This numbering system is chosen because it represents how a person is likely to inspect plants when walking through the field.  
+The final stage in the pipeline is generating a field map file.  This stage begins by assigning every plant in the field a unique number so it can be easily referenced in a database.  This numbering begins with plant \#1 at the start of the first row and then follows a serpentine pattern which can be seen in Figure~\ref{figure:serpentine}. This numbering system is chosen because it represents how a person is likely to inspect plants when walking through the field.  
 
 One complication that is addressed in this final stage is that there may be a relative shift between the coordinates calculated by the mapping platform and the desired coordinates.  This is due to the fact that \ac{rtk} systems are only accurate relative to the base station.  If the location of the base station isn't accurately surveyed then the field map will contain an offset in the both the northing and easting directions. 
 

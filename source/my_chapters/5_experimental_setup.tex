@@ -16,7 +16,7 @@ The mapping system was evaluated at the Land Institute on a type of intermediate
 \section{Field Setup}
 \label{section:field_setup}
 
-A two-row model 5000WD planter from Mechanical Transplanters was used to transplant the Kernza seedlings into the field.  The transplanter works by a series of six deposit cylinders rotating at a constant rate.  When a cylinder passes over the correct spot, its bottom flap is opened and the plant is ejected.  The yellow water tanks seen in figure \ref{figure:transplanter} are used to automatically apply a small amount of water to the plant, and then the rolling wheels help press the soil down.  
+A two-row model 5000WD planter from Mechanical Transplanters was used to transplant the Kernza seedlings into the field.  The transplanter works by a series of six deposit cylinders rotating at a constant rate.  When a cylinder passes over the correct spot, its bottom flap is opened and the plant is ejected.  The yellow water tanks seen in Figure~\ref{figure:transplanter} are used to automatically apply a small amount of water to the plant, and the rolling wheels help press the soil down.  
 
 \begin{figure}
 	\centering
@@ -29,7 +29,7 @@ The six deposit cylinders rotate so that each cylinder is spaced approximately 1
 
 The plants were split into 97 individual rows, roughly 180 meters long.  After the field was planted, the \ac{qr} codes marking the start and end of each row were manually placed.  The field contained a total of 4581 \ac{qr} codes.  Of these codes, 3619 corresponded to a plant grouping containing only a single plant.  The other 962 codes corresponded to plant groupings containing, on average, 25 plants.  
 
-\section{Mapping Window}
+\section{Mapping Time}
 
 An important decision for the mapping system is whether to collect images during the day or at night.  The biggest challenge of mapping during the day is the ability to provide consistent lighting.  Changes in scene lighting, for example between clouds and direct sun, can affect the color of plants and blue sticks and potentially cause under or over-exposure of \ac{qr} codes.  Daytime lighting can be made more consistent by using a shade cover over the field of view of the images.  This, however, depends on the sun being high enough in the sky for the shading to work, which in turn limits the total amount of time images can be collected each day.  
 
@@ -50,15 +50,15 @@ The correct choice of camera options is another important step in making the map
 
 The first option selected is the shooting mode, as that defines what other settings are available to change.  The preferred shooting mode is Manual because that will allow the exposure time, aperture, and sensitivity to be set to constant values.  Under controlled lighting conditions this will keep a consistent image intensity and prevent additional latency due to the camera calculating these settings before each image.
 
-The maximum exposure time is determined based on the speed of the robot and maximum allowed translation in the \ac{qr} codes.  If the exposure time is set too high the black and white squares making up the codes will start to blend together, rendering the code unreadable.  It was experimentally determined that an exposure time of 2.5 milliseconds, or 1/400 seconds, was sufficient for quality images.  At a nominal speed of 40 cm/sec this results in a translation of 1 millimeter during the exposure time.  Even though this is the same size as the grid squares, there are enough pixels per square that the blending was negligible. 
+The maximum exposure time is determined based on the speed of the robot and maximum allowed translation in the \ac{qr} codes.  If the exposure time is set too high the black and white squares making up the codes will start to blend together, rendering the code unreadable.  It was experimentally determined that an exposure time of 2.5 milliseconds, or 1/400 seconds, was sufficient for quality images.  At a nominal speed of 40 cm/sec, and yaw rate of 10 degrees/sec, this results in a translation of 1.4 millimeters during the exposure time.  Even though this is approximately the same size as the grid squares, there are enough pixels per square that the blending was negligible. 
 
 The aperture is set to a large diameter to maximize the amount of light reaching the sensor since the exposure time is relatively short for the amount of light available.  When the lens is fully open (an f-stop of f/2.8) the depth of field is noticeable reduced, and it becomes more difficult to keep the \ac{qr} codes in focus as the camera height slightly varies moving through the field.  Therefore, an f-stop of f/4 is preferable as it provides a good trade-off between depth of field and exposed light.  In addition, compared to f/2.8 an aperture of f/4 will have less noticeable lens effects such as distortion and vignetting which results in higher quality images.  
 
 The light sensitivity of the sensor, commonly specified as an \ac{iso} rating, is set last by inspecting the image in the field to achieve a desirable scene brightness.  Using the two \ac{led} bars per camera required an \ac{iso} of 1000.  If the ISO is set too high then sensor noise becomes significant.  If too high of an \ac{iso} is required then the aperture can be made larger, or the external lighting can be increased.  
 
-The white-balance is set to a fixed setting chosen to match the same temperature of light as the \ac{led} bars, which is listed in the product description as 6000 Kelvins.  Many cameras offer both a Flash and Cloudy white balance that are both centered around 6000 Kelvins.   Preliminary field tests indicate both options produce extremely similar results, so the Flash setting was used.  Auto-white balance mode should not be used, as most images will not contain a \ac{qr} code for reference, and as a result many images of plants will vary in chromacity. 
+The white-balance is set to a fixed setting chosen to match the same temperature of light as the \ac{led} bars, which is listed in the product description as 6000 kelvin.  Many cameras offer both a Flash and Cloudy white balance that are both centered around 6000 kelvin.   Preliminary field tests indicate both options produce extremely similar results, so the Flash setting was used.  Auto-white balance mode should not be used, as most images will not contain a \ac{qr} code for reference, and as a result many images of plants will vary in chromacity. 
 
-Finally, the image format is selected between raw and the \ac{jpg} format.  Raw images store the pixel readings directly from the sensor, thus no information from the exposed image is lost.  The \ac{jpg} format on the other hand typically merges adjacent pixels from the Bayer filter and applies a compression algorithm to reduce the file size.  Even though the compression algorithm produces image artifacts that reduces the quality of the images, it was determined this does not reduce the effectiveness of the post-process pipeline.  For the Canon 7D camera, raw images are around 15 megabytes larger then \ac{jpg} and require a conversion to a bitmap format before being useful for post-processing.  This conversion requires approximately 5 to 10 seconds per image and adds a significant amount of additional processing time.  For these reason the \ac{jpg} format was used for this experiment.
+Finally, the image format is selected between raw and the \ac{jpg} format.  Raw images store the pixel readings directly from the sensor, thus no information from the exposed image is lost.  The \ac{jpg} format on the other hand typically merges adjacent pixels from the Bayer filter and applies a compression algorithm to reduce the file size.  Even though the compression algorithm produces image artifacts that reduces the quality of the images, it was determined this does not reduce the effectiveness of the post-process pipeline.  For the Canon 7D camera, raw images are around 15 megabytes larger then \ac{jpg} and require a conversion to a bitmap format before being useful for post-processing.  This conversion requires approximately 5 to 10 seconds per image and adds a significant amount of additional processing time.  For these reasons the \ac{jpg} format was used for this experiment.
 
 \begin{table}
     \begin{center}
@@ -71,7 +71,7 @@ Finally, the image format is selected between raw and the \ac{jpg} format.  Raw 
         Aperture & f/4          \\
         Exposure & 1/400 seconds   \\
         ISO      & 1000  \\
-        White Balance & 6000K \\
+        White Balance & 6000 K \\
         Image Format & JPEG \\
         \hline
     \end{tabular}
@@ -82,4 +82,4 @@ Finally, the image format is selected between raw and the \ac{jpg} format.  Raw 
 
 \section{Robot Operation}
 
-In section \ref{section:base_functionality} it was discussed that the robot can operate in either cruise control mode or a fully autonomous mode.  In this experiment the robot was used in cruise control mode, mainly because at the time there were not any tools available to view and edit the waypoints used by the robot.  When generating a set of waypoints from the transplanter path, the waypoints at the row ends need to be edited to prevent the robot from driving in too rough of field conditions, as well as to prevent from turning before the end of the row and running over plants.  Even though the robot was operating in cruise control mode, the path of the robot was recorded, and it's possible to have the robot retrace this path in fully autonomous mode.
+In Section~\ref{section:base_functionality} it was discussed that the robot can operate in either cruise control mode or a fully autonomous mode.  In this experiment the robot was used in cruise control mode, mainly because at the time there were not any tools available to view and edit the waypoints used by the robot.  When generating a set of waypoints from the transplanter path, the waypoints at the row ends need to be edited to prevent the robot from driving in too rough of field conditions, as well as to prevent it from turning before the end of the row and running over plants.  Even though the robot was operating in cruise control mode, the path of the robot was recorded, and it's possible to have the robot retrace this path in fully autonomous mode.
