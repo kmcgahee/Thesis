@@ -1,0 +1,1 @@
+htlatex etdrtemplate.tex html "" -C:\Users\Kyle\Documents\thesis\html_version "--interaction=nonstopmode"

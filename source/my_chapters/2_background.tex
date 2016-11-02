@@ -9,11 +9,11 @@ This chapter begins with a brief summary of existing research that involves auto
 \section{Similar Research}
 \label{section:similar_research}
 
-There are two different approaches to precision plant mapping.  One is to create the map during the planting process, that is as the plants or seeds are being deposited into the ground.  While the other is to determine the plant locations after the planting is finished.  This section presents an existing solution to the former approach and then discusses different methods for determining plant locations after they've been planted in the ground. 
+There are two different approaches to precision plant mapping.  One is to create the map during the planting process, that is as the plants or seeds are being deposited into the ground.  The other is to determine the plant locations after the planting is finished.  This section presents an existing solution to the former approach and then discusses different methods for determining plant locations after they've been planted in the ground. 
 
 \subsection{Planter Based Solutions}
 
-The research performed by ~\citep{Sun:2010} evaluated two different methods for mapping tomato transplants during the planting process.  The first was the use of an encoder attached to the planting wheel in order to sense when a plant should be ejected from the planter. This wheel encoder had an angular resolution of 0.1 degrees which corresponded to a ground resolution of 0.45 millimeters.  There was naturally displacement between when the plant was released from the planter and where it actually ended up in the field due to the forward velocity of the planter.  This displacement was experimentally calculated on a small set of plants and accounted for during the mapping.  
+The research described in ~\citep{Sun:2010} evaluated two different methods for mapping tomato transplants during the planting process.  The first was the use of an encoder attached to the planting wheel in order to sense when a plant should be ejected from the planter. This wheel encoder had an angular resolution that corresponded to a ground resolution of 0.45 millimeters.  There was naturally displacement between when the plant was released from the planter and where it actually ended up in the field due to the forward velocity of the planter.  This displacement was experimentally calculated on a small set of plants and then accounted for during the mapping.  
 
 The second method was to use an infrared optical beam-splitter to detect when the stem of a plant passed through the beam.  As shown in figure \ref{figure:tomato_planter}, the beam-splitter was placed roughly 1 meter behind the planting wheel in order to give the plant time to settle once the soil has been pressed down around it.  
 
@@ -24,7 +24,7 @@ The second method was to use an infrared optical beam-splitter to detect when th
     \label{figure:optical_sensor}
 \end{figure}
 
-The mapping platform consisted of a Holland model 1600 planter equipped with a centimeter level \ac{rtk} system using a single antenna.  In order to determine the planter heading, a \ac{sse} linear regression algorithm was used on three consecutive position measurements. To further increase the accuracy of the system, a dual axis inclinometer was used to take into account the non-zero roll and pitch angles of the planter.  This sensor, along with the \ac{rtk} receiver, encoder, and beam-splitter, were all hooked up to a National Instruments cRIO embedded computer with a \ac{fpga} for parallel data logging.    
+The mapping platform consisted of a Holland model 1600 planter equipped with a centimeter level \ac{rtk} system using a single antenna.  In order to determine the planter heading, a \ac{sse} linear regression algorithm was used on three consecutive position measurements. To further increase the accuracy of the system, a dual axis inclinometer was used to take into account the non-zero roll and pitch angles of the planter.  This sensor, along with the \ac{rtk} receiver, encoder, and beam-splitter, were all connected to a National Instruments cRIO embedded computer with a \ac{fpga} for parallel data logging.    
 
 \begin{figure}
 	\centering
@@ -35,7 +35,7 @@ The mapping platform consisted of a Holland model 1600 planter equipped with a c
 
 In an experiment with 512 tomato plants, the beam-splitting sensor detected 491 objects, however only 249 of those corresponded to actual plants.  The rest were due to soil clods or other debris.  Many of the actual plants were missed due to being bent or planted at an angle and thus too low to pass through the beam.  Unsurprisingly, these results were considered to be very poor and were attributed to the difficulty in finding a good height for the beam-splitter to be placed above the ground.
 
-The second method, the encoder wheel, detected 527 planting events.  The additional 15 events were due to plants not being placed in the planter wheel by the operator.  After the offset calibration mentioned above, both the encoder wheel and beam-splitter sensor achieved average mapping accuracies of approximately 3 centimeters in the east direction and 1 centimeter in the north direction.  The movement of the planter was primarily in the east direction which explains the higher errors.  The results of the experiment are copied in table \ref{table:tomato_results}.  
+The second method, the encoder wheel, detected 527 planting events.  The additional 15 events were due to plants not being placed in the planter wheel by the operator.  After the offset calibration mentioned above, both the encoder wheel and beam-splitter sensor achieved average mapping accuracies of approximately 3 centimeters in the east direction and 1 centimeter in the north direction.  The movement of the planter was primarily in the east direction which explains the larger errors.  The results of the experiment are copied in table \ref{table:tomato_results}.  
 
 \begin{table}
     \begin{center}
@@ -54,7 +54,7 @@ The second method, the encoder wheel, detected 527 planting events.  The additio
    \end{center}
 \end{table} 
           
-While the encoder wheel was effective in creating an accurate plant map, this approach has several drawbacks. One of these drawbacks is it requires close monitoring of the sensors' status. If an issue goes unnoticed then it could potentially result in a large section of the map being unusable and without a straightforward way to redo the mapping. Another disadvantage is it's difficult to extend this method to include differentiating between different groups of plants, which for the experiment described in this thesis was considered a requirement.
+While the encoder wheel was effective in creating an accurate plant map, this approach has several drawbacks. One of these drawbacks is it requires close monitoring of the sensors' status. If an issue goes unnoticed then it could potentially result in a large section of the map being unusable, without a straightforward way to redo the mapping. Another disadvantage is it's difficult to extend this method to include differentiating between different groups of plants, which for the experiment described in this thesis was considered a requirement.
           
 It's also worth noting that both ~\citep{Nørremark:2007} and ~\citep{Ehsani:2004} implemented similar systems using infrared seed detectors, and these sensors were much more successful at reliably determining plant locations than the beam-splitting method described above.  The accuracy results of these systems were similar to those shown in table \ref{table:tomato_results}.
           
@@ -62,7 +62,7 @@ It's also worth noting that both ~\citep{Nørremark:2007} and ~\citep{Ehsani:200
 
 Many different methods in the past have been investigated for locating plants in the field.  While this is an essential step in creating a field map for a post-planting solution, this area of research mainly focuses on using this information in real-time as opposed to the creation of a map.  For example, in a tilling application the system would locate the plants as the platform is driving through the field rather than relying on a pre-existing map of plant locations.  As a result, the research typically focuses on the effectiveness of finding plants instead of the accuracy of their coordinates.  
 
-These methods of locating plants primarily involve non-contact sensors such as cameras or depth sensors.  For example, ~\citep{Andujar:2013} used the distance and reflectance values from a \ac{lidar} type sensor to effectively differentiate between green plants and soil. ~\citep{Kise:2005} successfully used a stereo vision camera to map rows of soy bean plants based on estimated height measurements from a three-dimensional reconstruction.  In addition, ~\citep{Panneton:2014} investigated combining color and near-infrared spectrum along with three-dimensional plant data to improve the robustness of locating plants.  ~\citep{Soille:2000} used a watershed algorithm with morphological operators to extract out a pre-known characteristic such as vein structure.  This is especially useful in situations where plants and weeds are overlapping, and it's not easy to differentiate between them.
+These methods of locating plants primarily involve non-contact sensors such as cameras or depth sensors.  For example, ~\citep{Andujar:2013} used the distance and reflectance values from a \ac{lidar} type sensor to effectively differentiate between green plants and soil. ~\citep{Kise:2005} successfully used a stereo vision camera to map rows of soy bean plants based on estimated height measurements from a three-dimensional reconstruction.  In addition, ~\citep{Panneton:2014} investigated combining color and near-infrared spectrum along with three-dimensional plant data to improve the robustness of locating plants.  ~\citep{Soille:2000} used a watershed algorithm with morphological operators to extract a pre-known characteristic such as vein structure.  This is especially useful in situations where plants and weeds are overlapping, and it's not easy to differentiate between them.
 
 Each of these methods have their advantages, but it was determined that a solution based on monocular, color vision is preferred for the proposed mapping system.  This is because plant height information is not useful right after transplanting, and single image solutions are inherently simpler and less expensive. 
 
@@ -72,7 +72,7 @@ A key step in any mapping process is the correct choice of coordinate systems.  
 
 \subsection{Latitude and Longitude}
 
-A commonly used frame that is fixed to the Earth is a spherical coordinate frame with the angles referred to as latitude and longitude. However, since the Earth is not a perfect sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the \ac{wgs}, which is the default datum used by the \acf{gps}. ~\citep{datums:2016}  The third dimension is altitude and is measured relative to the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
+A commonly used frame that is fixed to the Earth is a spherical coordinate system with the angles referred to as latitude and longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the \ac{wgs}, which is the default datum used by the \acf{gps}. ~\citep{datums:2016}  The third dimension is altitude and is measured relative to the surface of the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
 
 \begin{figure}
 	\centering
@@ -83,7 +83,7 @@ A commonly used frame that is fixed to the Earth is a spherical coordinate frame
 \subsection{Universal Transverse Mercator (UTM)}
 \label{section:utm}
 
-A projection model must be used on the latitude and longitude coordinates in order to describe points on the Earth's surface in a two-dimension plane.  The projection model used in this research is the \acf{utm} which splits the Earth into 60 lateral bands, examples of which are shown in figure \ref{utm_zones}.  In each zone an item is described by its easting, northing and altitude coordinates.  However, due to how the platform coordinate system is defined it's beneficial to have the Z axis in the downward direction.  This requires the easting and northing be switched to maintain a right-handed coordinate system. Therefore, UTM coordinates are described by $(N,E,D)$.  Another important modification is that the Z, or down, component is measured relative to the ground rather than the \ac{wgs} ellipsoid. 
+In order to describe points on the Earth's surface in a two-dimension plane, a projection model must be used on the latitude and longitude coordinates.  The projection model used in this research is the \acf{utm} which splits the Earth into 60 lateral bands, examples of which are shown in figure \ref{utm_zones}.  In each zone an item is described by its easting, northing and altitude coordinates.  However, due to how the platform coordinate system is defined it's beneficial to have the Z axis in the downward direction.  This requires the easting and northing be switched to maintain a right-handed coordinate system. Therefore, \acf{utm} coordinates are described by $(N,E,D)$.  Another important modification is that the Z, or down, component is measured relative to the ground rather than the \ac{wgs} ellipsoid. 
 
 \begin{figure}
 	\centering
@@ -135,7 +135,7 @@ The camera coordinate system describes the location of objects in the world rela
  
  \subsection{Projection Model}
  
- A common choice for a thin, convex lens is the central perspective imaging model shown in figure \ref{projection_model}. ~\citep{Coorke:2013} This model is based on the concept of an ideal lens that is treated as an equivalent pin-hole.  This implies the lens is perfectly focused and has no geometrical distortions.  The ideal lens will have two focal points along the optical axis as can be seen in figure \ref{focal_points}.  The central perspective model defines the image plane to be at the focal point in front of the lens, which is the left focal point shown in the figure.  
+ A common choice for a thin, convex lens is the central perspective imaging model shown in figure \ref{projection_model} ~\citep{Coorke:2013}. This model is based on the concept of an ideal lens that is treated as an equivalent pin-hole.  This implies the lens is perfectly focused and has no geometrical distortions.  The ideal lens will have two focal points along the optical axis as can be seen in figure \ref{focal_points}.  The central perspective model defines the image plane to be at the focal point in front of the lens, which is the left focal point shown in the figure.  
  
  \begin{figure}
  	\centering
@@ -171,7 +171,7 @@ The camera coordinate system describes the location of objects in the world rela
  \item The focal length exactly matches the manufacturer's specification.
  \end{itemize}
 
- All of these assumptions are false to some extent, and it's possible to correct them using certain camera calibration procedures. ~\citep{Zhang:1999} For the system presented in this research, however, these effects are considered negligible.  Another assumption is the camera's orientation is relative to the ground.  Orientation angles are generally measured with respect to the gravity vector which on hills will not be orthogonal to the ground.  If the mapping is done on a hill then the simplest solution is to make sure the camera's orientation about the platform's X and Y axes is zero.
+ All of these assumptions are false to some extent, and it's possible to correct them using certain camera calibration procedures ~\citep{Zhang:1999}. For the system presented in this research, however, these effects are considered negligible.  Another assumption is the camera's orientation is relative to the ground.  Orientation angles are generally measured with respect to the gravity vector which on hills will not be orthogonal to the ground.  If the mapping is done on a hill then the simplest solution is to make sure the camera's orientation about the platform's X and Y axes is zero.
  
  \subsubsection{Euclidean Space}
  
