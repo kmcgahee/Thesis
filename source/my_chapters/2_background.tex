@@ -193,7 +193,6 @@ The camera coordinate system describes the location of objects in the world rela
  $(x,y,f)$
  \end{center}
  then the result is a directional vector in the camera frame, but with units of millimeters rather than meters. The last frame transformation is to describe this vector in terms of the world frame.  This can be accomplished by a rotation matrix $R$
- 
  \begin{equation}
  \label{rotation_eq}
  \begin{bmatrix} n \\ e \\ d \end{bmatrix}
@@ -202,7 +201,6 @@ The camera coordinate system describes the location of objects in the world rela
  \begin{bmatrix} x \\ y \\ f \end{bmatrix}
  \end{equation}
  where this rotation matrix is composed from the active, extrinsic rotations about the world's north, east and down axes in that order, by angles $\phi$ (roll), $\theta$ (pitch), and $\psi$ (yaw).  These are the Tait-Bryan angles of the camera frame with respect to the world frame.  Technically, this is a passive rotation by negative angles since the vector is changing between bases, but using active rotations avoids many double negatives.
- 
   \begin{align}
   \label{rotation_equation}
   R &= R_z(\psi)*R_y(\theta)*R_x(\phi) \\ \notag
