@@ -29,7 +29,7 @@ Every stage of the pipeline is written in the Python programming language, and a
 
 The first step in the post-processing pipeline is to calculate the camera's position and orientation when each image was taken.  This is performed by the data collection program since it is a general process that's useful for many other types of sensors in addition to cameras.  However, after this calculation is done the format of the camera position is in latitude, longitude, altitude, and the format of the orientation is Euler angles.  Therefore, this initial stage must convert the camera position to the modified \ac{utm} coordinates discussed in Section~\ref{section:utm}, as well as calculate the homography matrix defined by equation \ref{equation:homography}.  
 
-Even though the modified \ac{utm} coordinates use the ground reference for the z-component, the height above the ellipsoid is also tracked for each image and item mapped in the field.  This information could be used to estimate relative differences in water content in different parts of the field due to changes in elevation. 
+Even though the modified UTM coordinates use the ground reference for the z component, the height above the ellipsoid is also tracked for each image and item mapped in the field.  This information could be used to estimate relative differences in water content in different parts of the field due to changes in elevation. 
 
 \section{Stage 1 - Extracting QR Codes}
 \label{processing-stage1}
@@ -47,7 +47,7 @@ The first step is to convert the image from the default color-space, which is \a
     \label{figure:color_spaces}
 \end{figure} 
 
-An important consideration is that most digital cameras perform a gamma-encoding when processing data from the imaging sensor.  This is a non-linear operation which maximizes the amount of intensity information that can be stored for each pixel, as it pertains to human perception.  However, human perception is not a valid concern in this post-processing application, and these non-linearities should be removed.  This was not realized until after the research was completed, and thus it is not implemented in the pipeline.
+An important consideration is that most digital cameras perform a gamma-encoding when processing data from the imaging sensor.  This is a non-linear operation which maximizes the amount of intensity information that can be stored for each pixel, as it pertains to human perception.  However, human perception is not a valid concern in this post-processing application, and these non-linearities should be removed by properly decoding each color component.  This was not realized until after the research was completed, and thus it is not implemented in the pipeline.
 
 \subsection{Thresholding}
 \label{section:qr_thresholding}

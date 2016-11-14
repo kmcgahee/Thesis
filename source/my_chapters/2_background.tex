@@ -54,15 +54,15 @@ The second method, the encoder wheel, detected 527 planting events.  The additio
    \end{center}
 \end{table} 
           
-While the encoder wheel was effective in creating an accurate plant map, this approach has several drawbacks. One of these drawbacks is it requires close monitoring of the sensors' status. If an issue goes unnoticed then it could potentially result in a large section of the map being unusable, without a straightforward way to redo the mapping. Another disadvantage is it's difficult to extend this method to include differentiating between different groups of plants, which for the experiment described in this thesis was considered a requirement.
+While the encoder wheel was effective in creating an accurate plant map, this approach has several drawbacks. One of these drawbacks is it requires close monitoring of the sensors' status. If an issue goes unnoticed then it could potentially result in a large section of the map being unusable, without a straightforward way to redo the mapping. Another disadvantage is it is difficult to extend this method to include differentiating between different groups of plants, which for the experiment described in this thesis was considered a requirement.
           
-It's also worth noting that both ~\citep{Nørremark:2007} and ~\citep{Ehsani:2004} implemented similar systems using infrared seed detectors, and these sensors were much more successful at reliably determining plant locations than the beam-splitting method described above.  The accuracy results of these systems were similar to those shown in Table~\ref{table:tomato_results}.
+Also, it is worth noting that both ~\citep{Nørremark:2007} and ~\citep{Ehsani:2004} implemented similar systems using infrared seed detectors, and these sensors were much more successful at reliably determining plant locations than the beam-splitting method described above.  The accuracy results of these systems were similar to those shown in Table~\ref{table:tomato_results}.
           
 \subsection{Post-Planting Solutions}
 
 Many different methods in the past have been investigated for locating plants in the field.  While this is an essential step in creating a field map for a post-planting solution, this area of research mainly focuses on using this information in real-time as opposed to the creation of a map.  For example, in a tilling application the system would locate the plants as the platform is driving through the field rather than relying on a pre-existing map of plant locations.  As a result, the research typically focuses on the effectiveness of finding plants instead of the accuracy of their coordinates.  
 
-These methods of locating plants primarily involve non-contact sensors such as cameras or depth sensors.  For example, ~\citep{Andujar:2013} used the distance and reflectance values from a \ac{lidar} type sensor to effectively differentiate between green plants and soil. ~\citep{Kise:2005} successfully used a stereo vision camera to map rows of soy bean plants based on estimated height measurements from a three-dimensional reconstruction.  In addition, ~\citep{Panneton:2014} investigated combining color and near-infrared spectrum along with three-dimensional plant data to improve the robustness of locating plants.  ~\citep{Soille:2000} used a watershed algorithm with morphological operators to extract a pre-known characteristic such as vein structure.  This is especially useful in situations where plants and weeds are overlapping, and it's not easy to differentiate between them.
+These methods of locating plants primarily involve non-contact sensors such as cameras or depth sensors.  For example, ~\citep{Andujar:2013} used the distance and reflectance values from a \ac{lidar} type sensor to effectively differentiate between green plants and soil. ~\citep{Kise:2005} successfully used a stereo vision camera to map rows of soybean plants based on estimated height measurements from a three-dimensional reconstruction.  In addition, ~\citep{Panneton:2014} investigated combining color and near-infrared spectrum along with three-dimensional plant data to improve the robustness of locating plants.  ~\citep{Soille:2000} used a watershed algorithm with morphological operators to extract a pre-known characteristic such as vein structure.  This is especially useful in situations where plants and weeds are overlapping, and it's not easy to differentiate between them.
 
 Each of these methods have their advantages, but it was determined that a solution based on monocular, color vision is preferred for the proposed mapping system.  This is because plant height information is not useful right after transplanting, and single image solutions are inherently simpler and less expensive. 
 
@@ -72,7 +72,7 @@ A key step in any mapping process is the correct choice of coordinate systems.  
 
 \subsection{Latitude and Longitude}
 
-A commonly used frame that is fixed to the Earth is a spherical coordinate system with the angles referred to as latitude and longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the \ac{wgs}, which is the default datum used by the \acf{gps}. ~\citep{datums:2016}  The third dimension is altitude and is measured relative to the surface of the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
+A commonly used frame that is fixed to the Earth is a spherical coordinate system with the angles referred to as latitude and longitude. However, since the Earth is not a sphere these angles are projected onto an ellipsoid, called a datum.  The datum that is used in this research is the \ac{wgs}, which is the default datum used by the \acf{gps} ~\citep{datums:2016}.  The third dimension is altitude and is measured relative to the surface of the ellipsoid.  Coordinates in the frame are denoted $(\Phi, \lambda, A)$.
 
 \begin{figure}
 	\centering
@@ -107,12 +107,12 @@ One issue with the northing and easting described by \ac{utm} is that rows in a 
 \subsection{Platform Coordinate System}
 \label{platform_coordinate_system}
 
-Another useful coordinate system is one fixed to the platform holding the cameras.  This coordinate system allows the relative spacing and orientation between the cameras and the \ac{gnss} antenna to be specified.  In addition, this coordinate system defines how the platform's orientation is defined in terms of Euler angles, which is useful for accounting for non-level camera orientation.  The axes of this coordinate system are displayed in Figure~\ref{platform_frame} which defines the x-axis out of the front of the platform, the y-axis out the right hand side and the z-axis orthogonal in the downward direction.  
+Another necessary coordinate system is one fixed to the platform holding the cameras.  This coordinate system allows the relative spacing and orientation between the cameras and the \ac{gnss} antenna to be specified.  In addition, this coordinate system defines how the platform's orientation is defined in terms of Euler angles, which is useful for accounting for non-level camera orientation.  The axes of this coordinate system are displayed in Figure~\ref{platform_frame} which defines the x-axis out of the front of the platform, the y-axis out the right hand side and the z-axis orthogonal in the downward direction.  
 
 \begin{figure}
 	\centering
-    \includegraphics[height=4in]{figures/platform_frame_2_gps.jpg}
-    \caption[Platform coordinate frame]{Example of the platform coordinate frame on a tractor system with two \ac{gnss} antennas shown in blue. The origin is the average of these antenna locations and is shown as a black X.}
+    \includegraphics[height=3in]{figures/platform_coordinates_husky_with_offsets.jpg}
+    \caption[Platform coordinate frame]{Forward-right-down platform coordinate frame. The origin is the average of the two antenna locations and is shown as a black X.  Sensor offset vectors are shown in blue for the two cameras.}
     \label{platform_frame}
 \end{figure}
 
@@ -213,10 +213,14 @@ The camera coordinate system describes the location of objects in the world rela
        \begin{bmatrix} \ 1 &    0       & 0           \\ 
                          0 & \cos(\phi) & -\sin(\phi) \\
                          0 & \sin(\phi) & cos(\phi)  \end{bmatrix} \\ \notag
-    &= \begin{bmatrix} \cos(\theta)\cos(\psi) & \sin(\phi)\sin(\theta)\cos(\psi) - \cos(\phi)\sin(\psi) &  \sin(\phi)\sin(\psi) +  \cos(\phi)\sin(\theta)\cos(\psi) \\
+    \end{align}
+These three rotation matrices can be multiplied together to result in a single rotation matrix.
+    \begin{equation}
+    \begin{bmatrix} \cos(\theta)\cos(\psi) & \sin(\phi)\sin(\theta)\cos(\psi) - \cos(\phi)\sin(\psi) &  \sin(\phi)\sin(\psi) +  \cos(\phi)\sin(\theta)\cos(\psi) \\
     \cos(\theta)\sin(\psi) & \cos(\phi)\cos(\psi) + \sin(\phi)\sin(\theta)\sin(\psi) &  \cos(\phi)\sin(\theta)\sin(\psi) - \sin(\phi)\cos(\psi) \\
      -\sin(\theta) & \sin(\phi)\cos(\theta) & \cos(\phi)\cos(\theta)     \end{bmatrix}
-  \end{align}
+     \notag
+    \end{equation}
   
  Lowercase coordinates $(n,e,d)$ in equation \ref{rotation_eq} are used to designate that these components are in the north, east, and down directions, but the units are still in millimeters meaning this does not represent the world point yet.  The position of this vector in the world frame is given by the camera's world position
 
@@ -228,16 +232,15 @@ The camera coordinate system describes the location of objects in the world rela
  .
  \end{equation}
 
- The actual world point can be found by calculating the intersection of this vector, $(n,e,d)$, with the flat plane of the Earth given by the equation $D=0$.  This can be done by parameterizing the vector as a line with parameter $S$ as 
+ The actual world point can be found by calculating the intersection of this vector, $(n,e,d)$, with the flat plane of the Earth given by the equation $D=0$.  This can be done by parameterizing the vector as a line with parameter $S$.
  
  \begin{equation}
  \label{parameter_ned}
  \begin{bmatrix} N \\ E \\ D \end{bmatrix} =
  S \begin{bmatrix} n \\ e \\ d \end{bmatrix}
  + T
- ,
  \end{equation}
- plugging in the third component, $D$, into the plane equation and solving for
+ Then plugging in the third component, $D$, into the plane equation and solving for
  \begin{center}
  $S = -T_z / d$
  , 
@@ -310,7 +313,7 @@ The camera coordinate system describes the location of objects in the world rela
      .
      \]
      
- If each element in $R$ is denoted by its row, $i$, and column, $j$, as $R_{ij}$, and since the inverse of an orthogonal matrix is equal to its transpose, then this is expanded to
+ If each element in $R$ is denoted by its row, $i$, and column, $j$, as $R_{ij}$, and since the inverse of a unitary matrix is equal to its transpose, then this is expanded to
  
       \[
       \begin{bmatrix} r_{11} & r_{21} & r_{31} & -T_x \\
